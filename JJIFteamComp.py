@@ -5,13 +5,13 @@ Create a mixed team compeition
 import json
 import requests
 import datetime as dt
-from requests.auth import HTTPBasicAuth
+#from requests.auth import HTTPBasicAuth
 import pandas as pd 
 from pandas import json_normalize
 import plotly.express as px
 import streamlit as st 
 import plotly.graph_objects as go
-import pycountry_convert as pc
+#import pycountry_convert as pc
 
 import plotly.graph_objs as pg
 import numpy as np
