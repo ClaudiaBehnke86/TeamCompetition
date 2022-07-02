@@ -101,6 +101,7 @@ teamA = team_dict[teamA_name]
 #teams_new = teams.remove(str(teamA))
 teamB_name = st.sidebar.selectbox('Team B', teams)
 teamB = team_dict[teamB_name]
+sel1, sel2, sel3, sel4, sel5 = st.columns(5)
 col1, col2 = st.columns(2)
 
 result = calc_overlap(teamA, teamB)
@@ -126,6 +127,15 @@ fig1 = go.Figure(go.Bar(
             marker_color=['red', 'blue'],
             orientation='h'))
 
+with sel1:
+    st.write(teamA_choice1)
+with sel2:
+    st.write(teamA_choice2)
+
+with sel4:
+    st.write(teamB_choice1)
+with sel5:
+    st.write(teamB_choice2)    
 
 fig1.update_xaxes(title_text='Chances for good category', range=(0, 1.0))
 fig1.update_yaxes(title_text='Teams')
@@ -146,9 +156,10 @@ with st.expander("Shared categories"):
         st.write(key_map[i]) 
 
 
-if st.button('Random Category'):
+if st.sidebar.button('Select Random Category'):
     randcat = random.choice(result)
-    st.write(key_map[randcat])
+    with sel3:
+        st.write(key_map[randcat])
 
     with col1:
         if (randcat in teamA):
