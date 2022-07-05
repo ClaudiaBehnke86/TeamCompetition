@@ -165,10 +165,10 @@ with sel2:
     st.markdown(f'<p style="background-color:#F31C2B;border-radius:2%;">{tA_c2}</p>', unsafe_allow_html=True)
 with sel4:
     #st.write(tB_c1)
-    st.markdown(f'<p style="background-color:#0090CE;border-radius:2%;">{tA_c2}</p>', unsafe_allow_html=True)
+    st.markdown(f'<p style="background-color:#0090CE;border-radius:2%;">{tB_c1}</p>', unsafe_allow_html=True)
 with sel5:
     #st.write(tB_c2)
-    st.markdown(f'<p style="background-color:#0090CE;border-radius:2%;">{tA_c2}</p>', unsafe_allow_html=True)
+    st.markdown(f'<p style="background-color:#0090CE;border-radius:2%;">{tB_c2}</p>', unsafe_allow_html=True)
 
 # now add the duo back in
 exclude.remove("Adults Duo Mixed")
