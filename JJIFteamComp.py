@@ -1,14 +1,13 @@
 '''
 
-Create a mixed team compeition for TWG 2022 that allows the teams 
-to choose their categories and one random category is selected 
+Create a mixed team compeition for TWG 2022 that allows the teams
+to choose their categories and one random category is selected
 
 '''
-import pandas as pd 
-import plotly.express as px
-import streamlit as st 
-import plotly.graph_objects as go
 import random
+import streamlit as st
+import plotly.graph_objects as go
+
 
 def calc_overlap(teama, teamb):
     '''
@@ -19,11 +18,12 @@ def calc_overlap(teama, teamb):
 
     in_second_but_not_in_first = in_second - in_first
 
-    result = teama + list(in_second_but_not_in_first)
+    result_out = teama + list(in_second_but_not_in_first)
 
-    return result
+    return result_out
 
-#some variables 
+
+# some variables
 teams = ['GER', 'FRA', 'NED', 'USA', 'UAE', 'ISR', 'THA', 'COL']
 
 GER = ["1492", "14511", "1447", "1448", "1456", "1457", "1481"]
@@ -47,7 +47,7 @@ team_dict = {
     'COL': COL
 }
 
-#using the kers from sportsdata (might become handy at some point)
+# using the kers from sportsdata (might become handy at some point)
 key_map = {
     # "1491": "Adults Duo Men",
     "1492": "Adults Duo Mixed",
@@ -94,14 +94,14 @@ st.sidebar.image("https://i0.wp.com/jjeu.eu/wp-content/uploads/2018/08/jjif-logo
                  use_column_width='always')
 
 # select teams
-teamA_name = st.sidebar.selectbox("1. Team Red", 
-                                  help="Choose the red team",      
+teamA_name = st.sidebar.selectbox("1. Team Red",
+                                  help="Choose the red team",
                                   options=teams)
-# convert string to variable 
+# convert string to variable
 teamA = team_dict[teamA_name]
 
 # remove teamA_name from options list
-teamB_name = st.sidebar.selectbox('2. Team Blue', 
+teamB_name = st.sidebar.selectbox('2. Team Blue',
                                   help="Choose the blue team",
                                   options=[x for x in teams if x != teamA_name])
 teamB = team_dict[teamB_name]
@@ -158,33 +158,29 @@ st.header("Selected categories")
 st.write("Use left hand menue to select the categories per team")
 sel1, sel2, sel3, sel4, sel5 = st.columns(5)
 with sel1:
-    #st.write(tA_c1)
     st.markdown(f'<p style="background-color:#F31C2B;border-radius:2%;">{tA_c1}</p>', unsafe_allow_html=True)
 with sel2:
-    #st.write(tA_c2)
     st.markdown(f'<p style="background-color:#F31C2B;border-radius:2%;">{tA_c2}</p>', unsafe_allow_html=True)
 with sel4:
-    #st.write(tB_c1)
     st.markdown(f'<p style="background-color:#0090CE;border-radius:2%;">{tB_c1}</p>', unsafe_allow_html=True)
 with sel5:
-    #st.write(tB_c2)
     st.markdown(f'<p style="background-color:#0090CE;border-radius:2%;">{tB_c2}</p>', unsafe_allow_html=True)
 
 # now add the duo back in
 exclude.remove("Adults Duo Mixed")
 
-# variable with all remaining categoies 
-result_over = [x for x in result_st if x not in exclude] 
+# variable with all remaining categoies
+result_over = [x for x in result_st if x not in exclude]
 with st.expander("Categories in random draw"):
     st.write("These categories exist in at least one team and were not selected")
     st.write(result_over)
 
-# calculate probabilities 
+# calculate probabilities
 good_teamA = (len([x for x in teamA_str if x not in exclude])/len(result_over))*100
 good_teamB = (len([x for x in teamB_str if x not in exclude])/len(result_over))*100
 
 # display probabilties for teams
-teams_sel = [teamB_name, teamA_name]     
+teams_sel = [teamB_name, teamA_name]
 values = [good_teamB, good_teamA]
 fig1 = go.Figure(go.Bar(
             x=[good_teamA, good_teamB],
@@ -210,12 +206,12 @@ if st.sidebar.button('Select Random Category',
 
     # show some messages if the category is in
     with col1:
-        if (randcat in teamA_str):
+        if randcat in teamA_str:
             st.success(str(randcat) + ' is in ' + teamA_name)
         else:
             st.error(str(randcat) + ' is NOT in ' + teamA_name)
     with col2:
-        if (randcat in teamB_str):
+        if randcat in teamB_str:
             st.success(str(randcat) + ' is in ' + teamB_name)
         else:
             st.error(str(randcat) + ' is NOT in ' + teamB_name)
