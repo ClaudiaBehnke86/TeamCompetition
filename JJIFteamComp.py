@@ -113,12 +113,12 @@ teamB_str = [key_map[item] for item in teamB]
 # display the teams in app
 col1, col2 = st.columns(2)
 with col1:
-    st.header(teamA_name)
+    st.markdown(f'<p style="color:#F31C2B;font-size:42px;border-radius:2%;">{teamA_name}</p>', unsafe_allow_html=True)
     with st.expander("Categories Team Red"):
         for i in teamA:
             st.write(key_map[i])
 with col2:
-    st.header(teamB_name)
+    st.markdown(f'<p style="color:#0090CE;font-size:42px;border-radius:2%;">{teamB_name}</p>', unsafe_allow_html=True)
     with st.expander("Categories Team Blue"):
         for i in teamB:
             st.write(key_map[i])
@@ -158,13 +158,17 @@ st.header("Selected categories")
 st.write("<- Use left hand menue to select the categories per team")
 sel1, sel2, sel3, sel4, sel5 = st.columns(5)
 with sel1:
-    st.write(tA_c1)
+    #st.write(tA_c1)
+    st.markdown(f'<p style="background-color:#F31C2B;border-radius:2%;">{tA_c1}</p>', unsafe_allow_html=True)
 with sel2:
-    st.write(tA_c2)
+    #st.write(tA_c2)
+    st.markdown(f'<p style="background-color:#F31C2B;border-radius:2%;">{tA_c2}</p>', unsafe_allow_html=True)
 with sel4:
-    st.write(tB_c1)
+    #st.write(tB_c1)
+    st.markdown(f'<p style="background-color:#0090CE;border-radius:2%;">{tA_c2}</p>', unsafe_allow_html=True)
 with sel5:
-    st.write(tB_c2)
+    #st.write(tB_c2)
+    st.markdown(f'<p style="background-color:#0090CE;border-radius:2%;">{tA_c2}</p>', unsafe_allow_html=True)
 
 # now add the duo back in
 exclude.remove("Adults Duo Mixed")
@@ -176,8 +180,8 @@ with st.expander("Categories in random draw"):
     st.write(result_over)
 
 # calculate probabilities 
-good_teamA = len([x for x in teamA_str if x not in exclude])/len(result_over)
-good_teamB = len([x for x in teamB_str if x not in exclude])/len(result_over)
+good_teamA = (len([x for x in teamA_str if x not in exclude])/len(result_over))*100
+good_teamB = (len([x for x in teamB_str if x not in exclude])/len(result_over))*100
 
 # display probabilties for teams
 teams_sel = [teamB_name, teamA_name]     
@@ -185,18 +189,23 @@ values = [good_teamB, good_teamA]
 fig1 = go.Figure(go.Bar(
             x=[good_teamA, good_teamB],
             y=[teamA_name, teamB_name],
-            marker_color=['red', 'blue'],
+            text=[teamA_str, teamB_str],
+            marker_color=['#F31C2B', '#0090CE'],
             orientation='h'))
-fig1.update_xaxes(title_text='Chances for "good" category', range=(0, 1.0))
+fig1.update_xaxes(title_text='Chances for "good" category [%]', range=(0, 100))
 fig1.update_yaxes(title_text='Teams')
 st.plotly_chart(fig1)
+
+
+LINK = '[Click here for the source code](https://github.com/ClaudiaBehnke86/TeamCompetition)'
+st.markdown(LINK, unsafe_allow_html=True)
 
 if st.sidebar.button('Select Random Category',
                      help="press this button to choose random category"):
     # random choice from all leftover categories
     randcat = random.choice(result_over)
     with sel3:
-        #display random cat
+        # display random cat
         st.write(randcat)
 
     # show some messages if the category is in
@@ -210,3 +219,5 @@ if st.sidebar.button('Select Random Category',
             st.success(str(randcat) + ' is in ' + teamB_name)
         else:
             st.error(str(randcat) + ' is NOT in ' + teamB_name)
+
+st.sidebar.markdown('<a href="mailto:sportdirector@jjif.org">Contact for problems</a>', unsafe_allow_html=True)
