@@ -88,7 +88,7 @@ key_map = {
 
 # Main programm starts here
 st.title('Team Competition TWG22')
-st.write("<- Use left hand menue to select the teams")
+st.write("Use left hand menue to select the teams")
 
 st.sidebar.image("https://i0.wp.com/jjeu.eu/wp-content/uploads/2018/08/jjif-logo-170.png?fit=222%2C160&ssl=1",
                  use_column_width='always')
@@ -155,7 +155,7 @@ exclude.append(tB_c2)
 # create some columns to display the choices
 
 st.header("Selected categories")
-st.write("<- Use left hand menue to select the categories per team")
+st.write("Use left hand menue to select the categories per team")
 sel1, sel2, sel3, sel4, sel5 = st.columns(5)
 with sel1:
     #st.write(tA_c1)
