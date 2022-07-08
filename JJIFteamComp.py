@@ -24,7 +24,7 @@ def calc_overlap(teama, teamb):
 
 
 # some variables
-teams = ['GER', 'FRA', 'NED', 'USA', 'UAE', 'ISR', 'THA', 'COL']
+teams = ['GER', 'FRA', 'NED', 'USA', 'UAE', 'ISR', 'THA', 'COL', 'MEX']
 
 GER = ["1492", "14511", "1447", "1448", "1456", "1457", "1481"]
 FRA = ["14511", "1447", "1453", "1456", "1457", "1475", "1483"]
@@ -45,7 +45,8 @@ team_dict = {
     'USA': USA,
     'ISR': ISR,
     'UAE': UAE,
-    'COL': COL
+    'COL': COL,
+    'MEX': MEX
 }
 
 # using the kers from sportsdata (might become handy at some point)
