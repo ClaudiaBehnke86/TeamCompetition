@@ -210,8 +210,6 @@ except IndexError:
 
 exclude.append(tB_c2)
 
-# create some columns to display the choices
-
 st.header("Selected categories")
 
 st.write(tA_c1)
@@ -249,48 +247,54 @@ with st.expander("Categories in random draw"):
 
 # calculate probabilities
 
+try:
+    random = intersection_teams_st[4]
+    st.sidebar.write(random)
+except IndexError:
+# create some columns to display the choices
 
-if(len(result_over)>0):
-    good_teamA = (len([x for x in teamA_str if x not in exclude])/len(result_over))*100
-    good_teamB = (len([x for x in teamB_str if x not in exclude])/len(result_over))*100
+    if(len(result_over)>0):
 
-
-     # display probabilties for teams
-    with st.expander("Display probabilties for teams"):
-        teams_sel = [teamB_name, teamA_name]
-        values = [good_teamB, good_teamA]
-        fig1 = go.Figure(go.Bar(
-                     x=[good_teamA, good_teamB],
-                     y=[teamA_name, teamB_name],
-                     text=[teamA_str, teamB_str],
-                     marker_color=['#F31C2B', '#0090CE'],
-                     orientation='h'))
-        fig1.update_xaxes(title_text='Chances for "good" category [%]', range=(0, 100))
-        fig1.update_yaxes(title_text='Teams')
-        st.plotly_chart(fig1)
-
-    if st.sidebar.button('Select Random Category',
-                          help="press this button to choose random category"):
-         # random choice from all leftover categories
-        randcat = random.choice(result_over)
-    
-        # display random cat
-        st.write(randcat)
-        st.write("Selection")
-        st.markdown("""---""")
+        good_teamA = (len([x for x in teamA_str if x not in exclude])/len(result_over))*100
+        good_teamB = (len([x for x in teamB_str if x not in exclude])/len(result_over))*100
 
 
-        # show some messages if the category is in
-        with col1:
-            if randcat in teamA_str:
-                st.success(str(randcat) + ' is in ' + teamA_name)
-            else:
-                st.error(str(randcat) + ' is NOT in ' + teamA_name)
-        with col2:
-            if randcat in teamB_str:
-                st.success(str(randcat) + ' is in ' + teamB_name)
-            else:
-                st.error(str(randcat) + ' is NOT in ' + teamB_name)
+         # display probabilties for teams
+        with st.expander("Display probabilties for teams"):
+            teams_sel = [teamB_name, teamA_name]
+            values = [good_teamB, good_teamA]
+            fig1 = go.Figure(go.Bar(
+                         x=[good_teamA, good_teamB],
+                         y=[teamA_name, teamB_name],
+                         text=[teamA_str, teamB_str],
+                         marker_color=['#F31C2B', '#0090CE'],
+                         orientation='h'))
+            fig1.update_xaxes(title_text='Chances for "good" category [%]', range=(0, 100))
+            fig1.update_yaxes(title_text='Teams')
+            st.plotly_chart(fig1)
+
+        if st.sidebar.button('Select Random Category',
+                              help="press this button to choose random category"):
+             # random choice from all leftover categories
+            randcat = random.choice(result_over)
+        
+            # display random cat
+            st.write(randcat)
+            st.write("Selection")
+            st.markdown("""---""")
+
+
+            # show some messages if the category is in
+            with col1:
+                if randcat in teamA_str:
+                    st.success(str(randcat) + ' is in ' + teamA_name)
+                else:
+                    st.error(str(randcat) + ' is NOT in ' + teamA_name)
+            with col2:
+                if randcat in teamB_str:
+                    st.success(str(randcat) + ' is in ' + teamB_name)
+                else:
+                    st.error(str(randcat) + ' is NOT in ' + teamB_name)
 
 st.sidebar.markdown('<a href="mailto:sportdirector@jjif.org">Contact for problems</a>', unsafe_allow_html=True)
 
