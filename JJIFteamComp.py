@@ -252,8 +252,12 @@ try:
     st.sidebar.write(random)
 except IndexError:
 # create some columns to display the choices
+    if(len(result_over)>1):
+        random = st.sidebar.selectbox('Choice 5',
+                                 help="Choose category",
+                                 options=[x for x in result_st if x not in exclude])
 
-    if(len(result_over)>0):
+    elif(len(result_over)>0):
 
         good_teamA = (len([x for x in teamA_str if x not in exclude])/len(result_over))*100
         good_teamB = (len([x for x in teamB_str if x not in exclude])/len(result_over))*100
