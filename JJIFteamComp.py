@@ -56,23 +56,32 @@ def intersection(teama, teamb):
     return result_out_overlapp
 
 
-#def sidebar():
-#    ''' make the sidebar
-#    '''
-
-
 # some variables
 teams = ['GER', 'FRA', 'NED', 'USA', 'UAE', 'ISR', 'THA', 'COL', 'MEX']
 
-GER = ["1492", "14511", "14471", "14561", "14811"]
-FRA = ["14511", "14471", "14531", "14561", "14761", "14811"]
-NED = ["14511", "14471", "14531", "14561"]
-THA = ["1492", "14531", "14531", "14561", "14811", "1484"]
-USA = ["14761", "1477", "14811", "1484"]
-ISR = ["14761", "1477", "14811", "1484"]
-UAE = ["14761", "1477", "14811", "1484"]
-COL = ["14511", "14531", "1477", "14811"]
-MEX = ["14511", "14471", "1448", "1461"]
+GER = ["FM1", "FM2", "FW2", "JW1", "D"]
+FRA = ["FM1", "FM2", "FW2", "JM1", "JW2"]
+NED = ["FM1", "FM2", "FW1", "FW2", "JM1", "D"] 
+THA = ["FM1", "FW1", "FW2", "JM1", "JW1", "JW2", "D"]  # ok
+USA = ["JW2", "JM2", "JM1"]
+ISR = ["JM1", "JM2", "JW1", "JW2", "D"]  
+UAE = ["FW2", "JM1", "JM2", "JW1", "JW2"]  # ok
+COL = ["FM1", "FW1", "JM2", "JW2"]  # ok
+MEX = ["FM1", "FM2", "JJM1", "JJM2"]
+DEN = ["FM1", "FM2", "FW1", "FW2", "D"]
+
+key_map = { 
+    "FM1": "Adults Fighting Men -62 kg & -69 kg",
+    "FM2": "Adults Fighting Men -77 kg & -85kg",
+    "FW1": "Adults Fighting Women -48 kg & -57 kg",
+    "FW2": "Adults Fighting Women -63 kg & -70 kg",
+    "JM1": "Adults Jiu-Jitsu Men -69 kg & -77 kg",
+    "JM2": "Adults Jiu-Jitsu Men -85 kg",
+    "JW1": "Adults Jiu-Jitsu Women -48 & -57 kg",
+    "JW2": "Adults Jiu-Jitsu Women -63 kg",
+    "D": "Adults Duo Mixed",
+    }
+
 
 # map variables to strings
 team_dict = {
@@ -87,50 +96,7 @@ team_dict = {
     'MEX': MEX
 }
 
-# using the kers from sportsdata (might become handy at some point)
-key_map = {
-    # "1491": "Adults Duo Men",
-    "1492": "Adults Duo Mixed",
-    # "1490": "Adults Duo Women",
-    # "1444": "Adults Fighting Men -56 kg",
-    "14511": "Adults Fighting Men -62 kg & -69 kg",
-    # "1451": "Adults Fighting Men -62 kg",
-    # "1446": "Adults Fighting Men -69 kg",
-    #"1447": "Adults Fighting Men -77 kg",
-    #"1448": "Adults Fighting Men -85 kg",
-    "14471": "Adults Fighting Men -77 kg & -85kg",
-    # "1449": "Adults Fighting Men -94 kg",
-    # "1450": "Adults Fighting Men +94 kg",
-    # "1452": "Adults Fighting Women -45 kg",
-    "14531": "Adults Fighting Women -48 kg & -57 kg",
-    # "1454": "Adults Fighting Women -52 kg",
-    #"1455": "Adults Fighting Women -57 kg",
-    "14561": "Adults Fighting Women -63 kg & -70 kg",
-    #"1457": "Adults Fighting Women -70 kg",
-    # "1458": "Adults Fighting Women +70 kg",
-    # "1473": "Adults Jiu-Jitsu Men -56 kg",
-    # "1474": "Adults Jiu-Jitsu Men -62 kg",
-    #"1475": "Adults Jiu-Jitsu Men -69 kg",
-    #"1476": "Adults Jiu-Jitsu Men -77 kg",
-    "14761": "Adults Jiu-Jitsu Men -69 kg & -77 kg",
-    "1477": "Adults Jiu-Jitsu Men -85 kg",
-    # "1478": "Adults Jiu-Jitsu Men -94 kg",
-    # "1479": "Adults Jiu-Jitsu Men +94 kg",
-    # "1480": "Adults Jiu-Jitsu Women -45 kg",
-    #"1481": "Adults Jiu-Jitsu Women -48 kg",
-    "14811": "Adults Jiu-Jitsu Women -48 & -57 kg",
-    # "1482": "Adults Jiu-Jitsu Women -52 kg",
-    #"1483": "Adults Jiu-Jitsu Women -57 kg",
-    "1484": "Adults Jiu-Jitsu Women -63 kg",
-    # "1485": "Adults Jiu-Jitsu Women -70 kg",
-    # "1486": "Adults Jiu-Jitsu Women +70 kg",
-    # "1494": "Adults Show Men",
-    # "1495": "Adults Show Mixed",
-    # "1493": "Adults Show Women"
-    }
 
-
-# def main_page():
 # Main programm starts here
 
 st.title('Team Competition TWG22')
@@ -172,15 +138,16 @@ with col2:
 # calc and display overlap between red and blue
 result = calc_overlap(teamA, teamB)
 intersection_teams = intersection(teamA, teamB)
-with st.expander("Shared categories"):
-    st.write("These categories exist in at least one of the teams")
-    result_st = [key_map.get(item, item) for item in result]
-    st.write(result_st)
 
 with st.expander("Intersection"):
     st.write("These categories exist in both teams")
     intersection_teams_st = [key_map.get(item, item) for item in intersection_teams]
     st.write(intersection_teams_st)
+
+with st.expander("Shared categories"):
+    st.write("These categories exist in at least one of the teams")
+    result_st = [key_map.get(item, item) for item in result]
+    st.write(result_st)
 
 exclude = []
 
@@ -199,8 +166,8 @@ try:
     st.sidebar.write(tB_c1)
 except IndexError:
     tB_c1 = st.sidebar.selectbox('Choice 2',
-                             help="Choose category",
-                             options=[x for x in result_st if x not in exclude])
+                                 help="Choose category",
+                                 options=[x for x in result_st if x not in exclude])
 exclude.append(tB_c1)
 
 try:
@@ -208,8 +175,8 @@ try:
     st.sidebar.write(tA_c2)
 except IndexError:
     tA_c2 = st.sidebar.selectbox('Choice 3',
-                             help="Choose category",
-                             options=[x for x in result_st if x not in exclude])
+                                 help="Choose category",
+                                 options=[x for x in result_st if x not in exclude])
 exclude.append(tA_c2)
 
 try:
@@ -217,8 +184,8 @@ try:
     st.sidebar.write(tB_c2)
 except IndexError:
     tB_c2 = st.sidebar.selectbox('Choice 4',
-                             help="Choose category",
-                             options=[x for x in result_st if x not in exclude])
+                                 help="Choose category",
+                                 options=[x for x in result_st if x not in exclude])
 
 exclude.append(tB_c2)
 
@@ -287,34 +254,3 @@ st.sidebar.markdown('<a href="mailto:sportdirector@jjif.org">Contact for problem
 LINK = '[Click here for the source code](https://github.com/ClaudiaBehnke86/TeamCompetition)'
 st.markdown(LINK, unsafe_allow_html=True)
 
-
-# ugly but works (166 is TWG ID)
-#df = getdata(str(166), st.secrets['user'], st.secrets['password'])
-
-#df_red = df[df['country_code'] == str(teamA_name)]
-#df_blue = df[df['country_code'] == str(teamB_name)]
-
-#with col1:
-#    with st.expander("Athletes Team Red"):
-#        st.write(df_red)
-#with col2:
-#    with st.expander("Categories Team Blue"):
-#        st.write(df_blue)
-
-    # number_of_participants
-    #num_par_dic = newdict['number_of_participants']
-    #num_par_dict_exp = {}
-
-    #for key, value in num_par_dic.items():
-    #    if str(key) in key_map.keys():
-    #        num_par_dict_exp[key_map[str(key)]] = value
-    #    else:
-    #        print("no mapping found for key ", key)
-
-# page_names_to_funcs = {
-#     "Calculate Chances": main_page,
-#     "Select Althletes": page2,
-# }
-
-# selected_page = st.sidebar.selectbox("Select a page", page_names_to_funcs.keys())
-# page_names_to_funcs[selected_page]()
