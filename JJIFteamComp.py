@@ -10,6 +10,7 @@ import plotly.graph_objects as go
 
 import requests
 import json
+import plotly.express as px
 from requests.auth import HTTPBasicAuth
 import pandas as pd 
 from pandas import json_normalize
@@ -57,19 +58,31 @@ def intersection(teama, teamb):
 
 
 # some variables
-teams = ['GER', 'FRA', 'NED', 'USA', 'UAE', 'ISR', 'THA', 'COL', 'MEX']
+teams = ['DEN','GER', 'FRA', 'NED', 'USA', 'MEX']
 
+DEN = ["FM1", "FM2", "FW1", "FW2", "D"]
 GER = ["FM1", "FM2", "FW2", "JW1", "D"]
-FRA = ["FM1", "FM2", "FW2", "JM1", "JW2"]
-NED = ["FM1", "FM2", "FW1", "FW2", "JM1", "D"] 
-THA = ["FM1", "FW1", "FW2", "JM1", "JW1", "JW2", "D"]  # ok
-USA = ["JW2", "JM2", "JM1"]
-ISR = ["JM1", "JM2", "JW1", "JW2", "D"]  
+FRA = ["FM2", "FW2", "JM1", "JW1"]
+NED = ["FM1", "FM2", "FW1", "FW2", "JM2", "D"] 
+#THA = ["FM1", "FW1", "FW2", "JM1", "JW1", "JW2", "D"]  # ok
+USA = ["JM2", "FM1", "FW2"]
+#ISR = ["JM1", "JM2", "JW1", "JW2", "D"]  
 UAE = ["FW2", "JM1", "JM2", "JW1", "JW2"]  # ok
 COL = ["FM1", "FW1", "JM2", "JW2"]  # ok
-MEX = ["FM1", "FM2", "JJM1", "JJM2"]
-DEN = ["FM1", "FM2", "FW1", "FW2", "D"]
+MEX = ["FM1", "FM2", "FW2", "JM1", "JM2"]
 
+#team_lists = [DEN, GER, FRA, NED, USA, MEX]
+
+#df_list = []
+
+
+#import itertools
+#for a, b in itertools.combinations(team_lists, 2):
+#    df_list.append(len(intersection(a,b)))
+
+#print(df_list) 
+
+#print(df_list)
 key_map = { 
     "FM1": "Adults Fighting Men -62 kg & -69 kg",
     "FM2": "Adults Fighting Men -77 kg & -85kg",
@@ -82,17 +95,24 @@ key_map = {
     "D": "Adults Duo Mixed",
     }
 
+#df = pd.DataFrame(df_lists, columns=key_map.values())
+
+#st.write(df)
+
+#fig = px.density_heatmap(df, x="Team A", y="TEAM B")
+#fig.show()
 
 # map variables to strings
 team_dict = {
+    'DEN': DEN,
     'GER': GER,
     'FRA': FRA,
     'NED': NED,
-    'THA': THA,
+    #'THA': THA,
     'USA': USA,
-    'ISR': ISR,
-    'UAE': UAE,
-    'COL': COL,
+    #'ISR': ISR,
+    #'UAE': UAE,
+    #'COL': COL,
     'MEX': MEX
 }
 
@@ -144,10 +164,11 @@ with st.expander("Intersection"):
     intersection_teams_st = [key_map.get(item, item) for item in intersection_teams]
     st.write(intersection_teams_st)
 
-with st.expander("Shared categories"):
-    st.write("These categories exist in at least one of the teams")
+with st.expander("Selectable categories"):
+    st.write("These categories exist in only one of the teams")
     result_st = [key_map.get(item, item) for item in result]
-    st.write(result_st)
+    result_st_sel = [x for x in result_st if x not in intersection_teams_st]
+    st.write(result_st_sel)
 
 exclude = []
 
@@ -192,17 +213,33 @@ exclude.append(tB_c2)
 # create some columns to display the choices
 
 st.header("Selected categories")
-st.write("Use left hand menue to select the categories per team")
-sel1, sel2, sel3, sel4, sel5 = st.columns(5)
-with sel1:
-    st.markdown(f'<p style="background-color:#000000;border-radius:2%;">{tA_c1}</p>', unsafe_allow_html=True)
-with sel2:
-    st.markdown(f'<p style="background-color:#000000;border-radius:2%;">{tB_c1}</p>', unsafe_allow_html=True)
-with sel3:
-    st.markdown(f'<p style="background-color:#000000;border-radius:2%;">{tA_c2}</p>', unsafe_allow_html=True)
-with sel4:
-    st.markdown(f'<p style="background-color:#000000;border-radius:2%;">{tB_c2}</p>', unsafe_allow_html=True)
 
+st.write(tA_c1)
+st.write("Selection")
+st.markdown("""---""")
+
+st.write(tB_c1)
+st.write("Selection")
+st.markdown("""---""")
+
+
+st.write(tA_c2)
+st.write("Selection")
+st.markdown("""---""")
+
+st.write(tB_c2)
+st.write("Selection")
+st.markdown("""---""")
+
+
+# with sel1:
+#     st.markdown(f'<p style="background-color:#000000;border-radius:2%;">{tA_c1}</p>', unsafe_allow_html=True)
+# with sel2:
+#     st.markdown(f'<p style="background-color:#000000;border-radius:2%;">{tB_c1}</p>', unsafe_allow_html=True)
+# with sel3:
+#     st.markdown(f'<p style="background-color:#000000;border-radius:2%;">{tA_c2}</p>', unsafe_allow_html=True)
+# with sel4:
+#     st.markdown(f'<p style="background-color:#000000;border-radius:2%;">{tB_c2}</p>', unsafe_allow_html=True)
 
 # variable with all remaining categoies
 result_over = [x for x in result_st if x not in exclude]
@@ -213,29 +250,32 @@ with st.expander("Categories in random draw"):
 # calculate probabilities
 
 if(len(result_over)>0):
-    good_teamA = (len([x for x in teamA_str if x not in exclude])/len(result_over))*100
-    good_teamB = (len([x for x in teamB_str if x not in exclude])/len(result_over))*100
+#     good_teamA = (len([x for x in teamA_str if x not in exclude])/len(result_over))*100
+#     good_teamB = (len([x for x in teamB_str if x not in exclude])/len(result_over))*100
 
-    # display probabilties for teams
-    teams_sel = [teamB_name, teamA_name]
-    values = [good_teamB, good_teamA]
-    fig1 = go.Figure(go.Bar(
-                x=[good_teamA, good_teamB],
-                y=[teamA_name, teamB_name],
-                text=[teamA_str, teamB_str],
-                marker_color=['#F31C2B', '#0090CE'],
-                orientation='h'))
-    fig1.update_xaxes(title_text='Chances for "good" category [%]', range=(0, 100))
-    fig1.update_yaxes(title_text='Teams')
-    st.plotly_chart(fig1)
+#     # display probabilties for teams
+#     teams_sel = [teamB_name, teamA_name]
+#     values = [good_teamB, good_teamA]
+#     fig1 = go.Figure(go.Bar(
+#                 x=[good_teamA, good_teamB],
+#                 y=[teamA_name, teamB_name],
+#                 text=[teamA_str, teamB_str],
+#                 marker_color=['#F31C2B', '#0090CE'],
+#                 orientation='h'))
+#     fig1.update_xaxes(title_text='Chances for "good" category [%]', range=(0, 100))
+#     fig1.update_yaxes(title_text='Teams')
+#     st.plotly_chart(fig1)
 
     if st.sidebar.button('Select Random Category',
-                         help="press this button to choose random category"):
-        # random choice from all leftover categories
+                          help="press this button to choose random category"):
+         # random choice from all leftover categories
         randcat = random.choice(result_over)
-        with sel5:
-            # display random cat
-            st.write(randcat)
+    
+        # display random cat
+        st.write(randcat)
+        st.write("Selection")
+        st.markdown("""---""")
+
 
         # show some messages if the category is in
         with col1:
