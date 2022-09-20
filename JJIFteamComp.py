@@ -1,7 +1,10 @@
 '''
 
-Create a mixed team compeition for TWG 2022 that allows the teams
-to choose their categories and one random category is selected
+Create a mixed team competiton that allows the teams
+
+There are team categories which consist of individual categories:
+F.e. in Adults Fighting Men -85 kg athletes from Adults Fighting Men -77 kg 
+and Adults Fighting Men -85 kg  could compete in the category 
 
 '''
 import random
@@ -15,67 +18,11 @@ from requests.auth import HTTPBasicAuth
 import pandas as pd 
 from pandas import json_normalize
 
+#  categories and short ids
+#  from outlines https://cdn.sportdata.org/96eb874d-48f8-4ed3-b58a-145b53d43de4/
+#  if you change something here make sure to also change it for TEAMCAT_TO_CATID dict!
 
-CLUBNAME_COUNTRY_MAP = {"Belgian Ju-Jitsu Federation": 'BEL',
-                        "Deutscher Ju-Jitsu Verband e.V.": 'GER',
-                        "Federazione Ju Jitsu Italia": 'ITA',
-                        "Romanian Martial Arts Federation": 'ROU'}
-
-def get_athletes_cat(eventid, cat_id, user, password):
-    """
-    get the athletes form sportdata
-    """
-
-    uri = 'https://www.sportdata.org/ju-jitsu/rest/event/categories/'+str(eventid)+'/'+str(cat_id)+'/'
-
-    response = requests.get(uri, auth=HTTPBasicAuth(user, password),)
-    d = response.json()
-
-    df_out = json_normalize(d["members"])
-
-    if not df_out.empty:
-        if df_out['type'].str.contains('athlete').any():
-            #match to name format of Duo cats
-            df_out['name'] = df_out['first'] + " " + df_out['last']
-            df = df_out[['name','country_code']]
-            df['cat_id'] = str(cat_id)
-        else:
-            # for an unclear reason teams to no have a coutnry code... sigh.. 
-            # i will write a function to convert club name to country... 
-            df_out['country_code'] = df_out['club_name'].replace(CLUBNAME_COUNTRY_MAP)
-            df = df_out[['name', 'country_code']]
-            df['cat_id'] = str(cat_id)
-    else:
-        df =pd.DataFrame()
-    return df
-
-
-def calc_overlap(teama, teamb):
-    '''
-    Function to calc the overlap categories between the teams
-    '''
-    in_first = set(teama)
-    in_second = set(teamb)
-
-    in_second_but_not_in_first = in_second - in_first
-
-    result_out = teama + list(in_second_but_not_in_first)
-
-    return result_out
-
-def intersection(teama, teamb):
-    '''
-    Function to calc the intersection categories between the teams
-    '''
-
-    result_out_overlapp = [value for value in teama if value in teamb]
-
-    return result_out_overlapp
-
-
-#  team categories
-#  taken from outlines https://cdn.sportdata.org/96eb874d-48f8-4ed3-b58a-145b53d43de4/ 
-key_map = { 
+TEAMCAT_NAME_DICT = { 
     "FM1": "Adults Fighting Men -69 kg",
     "FM2": "Adults Fighting Men -85kg",
     "FM3": "Adults Fighting Men +85kg",
@@ -88,11 +35,11 @@ key_map = {
     "JW1": "Adults Jiu-Jitsu Women -52",
     "JW2": "Adults Jiu-Jitsu Women -63 kg",
     "JW3": "Adults Jiu-Jitsu Women +63 kg",
-    "D": "Adults Duo",
-    }
+    "D": "Adults Duo"}
 
-# mapping all sportdata cat IDs to that are allowed in event (Adults & U21)
-cat_to_ids = {
+# mapping all sportdata category IDs to the team categories
+# in this case (Adults & U21)
+TEAMCAT_TO_CATID = {
     "FM1": [1444, 1451, 1446, 1429, 1430, 1431],
     "FM2": [1447, 1448, 1432, 1433],
     "FM3": [1449, 1450, 1434, 1435],
@@ -108,14 +55,102 @@ cat_to_ids = {
     "D": [1491, 1492, 1493, 1487, 1488, 1489],
 }
 
+#  since teams categories have no country I use this quick and dirty workaround
+#  to map clubnames in sportdata api to country codes... 
+CLUBNAME_COUNTRY_MAP = {"Belgian Ju-Jitsu Federation": 'BEL',
+                        "Deutscher Ju-Jitsu Verband e.V.": 'GER',
+                        "Federazione Ju Jitsu Italia": 'ITA',
+                        "Romanian Martial Arts Federation": 'ROU'}
+
+
+def get_athletes_cat(eventid, cat_id, user, password):
+    """
+    get the athletes form sportdata per category & export to a nice data frame
+
+    Parameters
+    ----------
+    eventid
+        sportdata event_id (from database) [int]
+    cat_id
+        sportdata category_id (from database) [int]
+     user
+        api user name
+    password
+        api user password    
+    """
+
+    #URI of the rest API
+    uri = 'https://www.sportdata.org/ju-jitsu/rest/event/categories/'+str(eventid)+'/'+str(cat_id)+'/'
+
+    response = requests.get(uri, auth=HTTPBasicAuth(user, password))
+    d = response.json()
+    df_out = json_normalize(d["members"])
+
+    if not df_out.empty:
+        #first idivdual categories
+        if df_out['type'].str.contains('athlete').any():
+            #  match to name format of Duo categories
+            df_out['name'] = df_out['first'] + " " + df_out['last']
+            df = df_out[['name' , 'country_code']]
+            # add the origial category id
+            df['cat_id'] = str(cat_id)
+        else:
+            # for an unclear reason teams to no have a country code...
+            # convert club name to country using dict...
+            df_out['country_code'] = df_out['club_name'].replace(CLUBNAME_COUNTRY_MAP)
+            df = df_out[['name', 'country_code']]
+            df['cat_id'] = str(cat_id)
+    else:
+        # just return empty datafram
+        df =pd.DataFrame()
+    return df
+
+
+def calc_overlap(teama, teamb):
+    '''
+    Function to calc the overlap categories between the teams
+    Returns list with overlapping categorries
+
+    Parameters
+    ----------
+    teama
+        list with teamcategoreis from team A
+    teamb
+        list with teamcategoreis from team B
+    '''
+    in_first = set(teama)
+    in_second = set(teamb)
+
+    in_second_but_not_in_first = in_second - in_first
+
+    result_out = teama + list(in_second_but_not_in_first)
+
+    return result_out
+
+
+def intersection(teama, teamb):
+    '''
+    Function to calc the intersection categories between the teams
+    Returns list with intersection categorries
+    
+    Parameters
+    ----------
+    teama
+        list with teamcategoreis from team A
+    teamb
+        list with teamcategoreis from team B
+
+    '''
+    result_out_overlapp = [value for value in teama if value in teamb]
+
+    return result_out_overlapp
+
 # Main programm starts here
 st.title('Team Competition')
 st.write("Use left hand menue to select the teams")
 
-
 st.sidebar.image("https://i0.wp.com/jjeu.eu/wp-content/uploads/2018/08/jjif-logo-170.png?fit=222%2C160&ssl=1",
                  use_column_width='always')
-
 
 apidata = st.sidebar.checkbox("Get registration from Sportdata API", 
                               help="Check if the registration is still open",
@@ -126,8 +161,8 @@ if apidata is True:
     # create empty temporary list for catgories to merge into team categories
     list_df_new_total = []
 
-    for x in cat_to_ids.keys(): 
-        ids = cat_to_ids.get(x)
+    for x in TEAMCAT_TO_CATID: 
+        ids = TEAMCAT_TO_CATID.get(x)
         list_df_new = []
         for id_num in ids:
             athletes_cat = get_athletes_cat(str(sd_key), str(id_num), st.secrets['user'], st.secrets['password'])        
@@ -174,12 +209,12 @@ with col1:
     st.markdown(f'<p style="color:#F31C2B;font-size:42px;border-radius:2%;">{teamA_name}</p>', unsafe_allow_html=True)
     with st.expander("Categories Team Red"):
         for i in teamA:
-            st.write(key_map[i])
+            st.write(TEAMCAT_NAME_DICT[i])
 with col2:
     st.markdown(f'<p style="color:#0090CE;font-size:42px;border-radius:2%;">{teamB_name}</p>', unsafe_allow_html=True)
     with st.expander("Categories Team Blue"):
         for i in teamB:
-            st.write(key_map[i])
+            st.write(TEAMCAT_NAME_DICT[i])
 
 # calc and display overlap between red and blue
 result = calc_overlap(teamA, teamB)
@@ -187,12 +222,12 @@ intersection_teams = intersection(teamA, teamB)
 
 with st.expander("Intersection"):
     st.write("These categories exist in both teams")
-    intersection_teams_st = [key_map.get(item, item) for item in intersection_teams]
+    intersection_teams_st = [TEAMCAT_NAME_DICT.get(item, item) for item in intersection_teams]
     st.write(intersection_teams_st)
 
 with st.expander("Selectable categories"):
     st.write("These categories exist in only one of the teams")
-    result_st = [key_map.get(item, item) for item in result]
+    result_st = [TEAMCAT_NAME_DICT.get(item, item) for item in result]
     result_st_sel = [x for x in result_st if x not in intersection_teams_st]
     st.write(result_st_sel)
 
