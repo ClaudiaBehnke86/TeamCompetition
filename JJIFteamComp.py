@@ -167,7 +167,7 @@ st.title('Team Competition')
 st.sidebar.image("https://i0.wp.com/jjeu.eu/wp-content/uploads/2018/08/jjif-logo-170.png?fit=222%2C160&ssl=1",
                  use_column_width='always')
 
-page = st.sidebar.selectbox('Select mode',['Preparation','Matches']) 
+page = st.sidebar.selectbox('Select mode',['Preparation','Selection & Match Phase']) 
 
 if page == 'Preparation':        
     apidata = st.checkbox("Get registration from Sportdata API", 
@@ -262,16 +262,15 @@ else:
         result = calc_overlap(teamA, teamB)
         intersection_teams = intersection(teamA, teamB)
 
-        with st.expander("Intersection"):
+        st.write("There are " + str(len(intersection_teams)) +" overlapping categories in this team match") 
+        with st.expander("Show Overlapping Categories"):
             st.write("These categories exist in both teams")
             intersection_teams_str = [TEAMCAT_NAME_DICT.get(item, item) for item in intersection_teams]
             st.write(intersection_teams_str)
 
-        with st.expander("Selectable categories"):
-            st.write("These categories exist in only one of the teams")
-            result_st = [TEAMCAT_NAME_DICT.get(item, item) for item in result]
-            result_st_sel = [x for x in result_st if x not in intersection_teams_str]
-            st.write(result_st_sel)
+        # which categories exist in at least one team
+        result_st = [TEAMCAT_NAME_DICT.get(item, item) for item in result]
+        result_st_sel = [x for x in result_st if x not in intersection_teams_str]
 
         #list to add categories that are already selected
         exclude = []
@@ -280,34 +279,36 @@ else:
         # amount of categories that will fight:
         MATCHES = 7
 
+        # for confirm button (to avoid direct display of matches)
+        confirm = False
 
         #3 cases:   
         if len(intersection_teams) == MATCHES:
             # excat the same number
             # just display the the category and let team select the atlhtes
 
-            st.sidebar.header("Selected categories")
-            st.sidebar.write('- Exact the same categories')
-            st.sidebar.write('Nothing to do')
+            st.write('- Exact the same categories')
+            st.write('Nothing to do')
             selected = intersection_teams
-            for i in selected:
-                st.sidebar.write(TEAMCAT_NAME_DICT[i])
+            confirm = True
 
         elif len(intersection_teams) > MATCHES:
             # more options than MATCHES
-            # remove options
+            # remove categories
+            st.write('More overlapping categories than individual fights')
+            #check how many cats are to much:
+            overhead_cat = len(intersection_teams) - MATCHES
+            st.write('Remove ' +str(overhead_cat)+ ' categories')
 
-            # remove till even or uneven each team removes same amount of categories
-            # if leftover: random choice
-            st.sidebar.write('- More options than MATCHES')
-            st.sidebar.write('Remove categories')
             selected = intersection_teams
 
-            #check how many cats are to much:
-            overheadd_cat = len(intersection_teams) - MATCHES
+            if(overhead_cat // 2) != 0:
+                st.write("- Each team can choose "+ str(overhead_cat // 2)+" categories to remove")
+            if(overhead_cat % 2) != 0: 
+                st.write("- There will be a random choice between the categories")
 
             # remove always 2 categories
-            while overheadd_cat > 2:
+            while overhead_cat >= 2:
 
                 tA = st.sidebar.selectbox('Choice Red',
                                           help="Choose category to remove",
@@ -322,27 +323,9 @@ else:
                 selected.remove(rev_look(tB, TEAMCAT_NAME_DICT))
                 exclude.append(tB)
 
-                overheadd_cat = overheadd_cat - 2
+                overhead_cat = overhead_cat - 2
 
-            if (overheadd_cat % 2) == 0:
-                # The remaining number is even
-                st.write("both teams need to choose")
-
-                tA = st.sidebar.selectbox('Choice Red',
-                                          help="Choose category to remove",
-                                          options=[TEAMCAT_NAME_DICT[x] for x in selected])
-                # revese lookup of key
-
-                selected.remove(rev_look(tA, TEAMCAT_NAME_DICT))
-                exclude.append(tA)
-
-                tB = st.sidebar.selectbox('Choice Blue',
-                                          help="Choose category to remove",
-                                          options=[TEAMCAT_NAME_DICT[x] for x in selected])
-                selected.remove(rev_look(tB, TEAMCAT_NAME_DICT))
-                exclude.append(tB)
-
-            else:
+            if (overhead_cat % 2) != 0:
                 # the number is odd
                 if st.sidebar.button('Select Random Category to remove',
                                       help="press this button to choose random category to remove"):
@@ -352,30 +335,37 @@ else:
                     # display random cat
                     st.sidebar.markdown(f'<p style="background-color:#000000;border-radius:4%;">{TEAMCAT_NAME_DICT[randcat]}</p>', unsafe_allow_html=True)
                     selected.remove(randcat)
-
-            #for i in selected:
-
-            #    st.sidebar.write(TEAMCAT_NAME_DICT[i])
-
+                    confirm = True
+            else:
+                # button to avoid immediate display of categories
+                confirm = st.sidebar.button('Confirm Selection') 
+                    
         elif len(intersection_teams_str) < MATCHES:
             # less options than MATCHES
-            # add teams teams
-            st.sidebar.write('Less options than MATCHES')
-            st.sidebar.write('Add categrories')
+            st.write('Less overlapping categories than individual fights')
+            
+            # check how many teams are missing:
+            miss_cat = MATCHES - len(intersection_teams_str)            
+            st.write('Add '+str(miss_cat)  +' categories')
+
+            #add the overlapp to seleciton
             selected = intersection_teams
-            #for i in selected:
-            #    st.sidebar.write(TEAMCAT_NAME_DICT[i])
 
             # add the selected teams to the excluded list
             # (they can't be selected twice)
             exclude.append(intersection_teams_str)
 
-            # check how many teams are missing:
-            miss_cat = MATCHES - len(intersection_teams_str)
-
             # add always 2 categories
-            while miss_cat > 2:
+            with st.expander("Selectable categories"):
+                st.write("These categories exist in only one of the teams")
+                st.write(result_st_sel)
 
+            if(miss_cat // 2) != 0:
+                st.write("- Each team can choose "+ str(miss_cat // 2)+" categories to add")
+            if(miss_cat % 2) != 0: 
+                st.write("- There will be a random choice between the categories")
+            while miss_cat >= 2:
+                
                 tA = st.sidebar.selectbox('Choice Red',
                                           help="Choose category",
                                           options=[x for x in result_st_sel if x not in exclude])
@@ -390,25 +380,10 @@ else:
                 exclude.append(tB)
 
                 miss_cat = miss_cat - 2
+                
 
-            if (miss_cat % 2) == 0:
-                # The remaining number is even
-                st.write("both teams need to choose")
-
-                tA = st.sidebar.selectbox('Choice Red',
-                                             help="Choose category",
-                                             options=[x for x in result_st_sel if x not in exclude])
-                # revese lookup of key
-                selected.append(rev_look(tA, TEAMCAT_NAME_DICT))
-                exclude.append(tA)
-
-                tB = st.sidebar.selectbox('Choice Blue',
-                                         help="Choose category",
-                                         options=[x for x in result_st_sel if x not in exclude])
-                selected.append(rev_look(tB, TEAMCAT_NAME_DICT))
-                exclude.append(tB)
-            else:
-                # the number is odd
+            if (miss_cat % 2) != 0:
+                # The remaining number is odd
                 if st.sidebar.button('Select Random Category',
                                       help="press this button to choose random category"):
                     # random choice from all leftover categories
@@ -418,10 +393,13 @@ else:
                     st.sidebar.markdown(f'<p style="background-color:#000000;border-radius:4%;">{randcat}</p>', unsafe_allow_html=True)
                     # revese lookup of key
                     key = next(key for key, value in TEAMCAT_NAME_DICT.items() if value == randcat)
-                    selected.append(key)
+                    selected.append(key) 
+                    confirm = True
+            else:
+                # button to avoid immediate display of categories
+                confirm = st.sidebar.button('Confirm Selection')      
 
-
-        if(len(selected) == MATCHES):
+        if((len(selected) == MATCHES) & (confirm == True)):
             st.sidebar.header("Selected categories")
             for i in selected:
                 st.sidebar.write(TEAMCAT_NAME_DICT[i])
