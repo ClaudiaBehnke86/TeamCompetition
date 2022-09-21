@@ -100,6 +100,7 @@ def get_athletes_cat(eventid, cat_id, user, password):
             # for an unclear reason teams to no have a country code...
             # convert club name to country using dict...
             df_out['country_code'] = df_out['club_name'].replace(CLUBNAME_COUNTRY_MAP)
+            df_out['name'].replace(",", "/", regex=True, inplace=True)
             df = df_out[['name', 'country_code']]
             df['cat_id'] = str(cat_id)
     else:
@@ -212,13 +213,12 @@ if page == 'Preparation':
     btn = st.download_button(
         label="Download data from event",
         data=file,
-        file_name="Data",
+        file_name="Data.csv",
         mime="csv")
 
 else:
         
     # Main programm starts here
-    
     st.write("Use left hand menue to select the teams")
 
     uploaded_file = st.sidebar.file_uploader("Choose a file",
