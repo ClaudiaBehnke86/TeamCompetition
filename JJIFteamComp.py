@@ -19,6 +19,11 @@ import pandas as pd
 pd.options.mode.chained_assignment = None  # default='warn'
 
 from pandas import json_normalize
+from fpdf import FPDF
+import base64
+
+import matplotlib.pyplot as plt
+from matplotlib.backends.backend_pdf import PdfPages
 
 #  categories and short ids
 #  from outlines https://cdn.sportdata.org/96eb874d-48f8-4ed3-b58a-145b53d43de4/
@@ -56,6 +61,94 @@ TEAMCAT_TO_CATID = {
     "JW3": [1485, 1486, 1471, 1472],
     "D": [1491, 1492, 1493, 1487, 1488, 1489],
 }
+
+TEAMCAT_ALLOWED = {
+    "FM1": ["JM1"],
+    "FM2": ["FM1","JM1","JM2"],
+    "FM3": ["FM2","JM2","JM3"],
+    "FW1": ["JW1"],
+    "FW2": ["FW1","JW1", "JW2"],
+    "FW3": ["FW2","JW2","JW3"],
+    "JM1": ["FM1"],
+    "JM2": ["JM1","FM1","FM2"],
+    "JM3": ["JM2","FM2","FM3"],
+    "JW1": ["JF1"],
+    "JW2": ["JW1","FW1","FW2"],
+    "JW3": ["JW2","FW2","FW3"],
+    "D":[]
+}
+
+ID_TO_NAME = {
+    1466: "U21 Jiu-Jitsu Women -45 kg",
+    1467: "U21 Jiu-Jitsu Women -48 kg",
+    1468: "U21 Jiu-Jitsu Women -52 kg",
+    1469: "U21 Jiu-Jitsu Women -57 kg",
+    1470: "U21 Jiu-Jitsu Women -63 kg",
+    1471: "U21 Jiu-Jitsu Women -70 kg",
+    1472: "U21 Jiu-Jitsu Women +70 kg",
+    1459: "U21 Jiu-Jitsu Men -56 kg",
+    1460: "U21 Jiu-Jitsu Men -62 kg",
+    1461: "U21 Jiu-Jitsu Men -69 kg",
+    1462: "U21 Jiu-Jitsu Men -77 kg",
+    1463: "U21 Jiu-Jitsu Men -85 kg",
+    1464: "U21 Jiu-Jitsu Men -94 kg",
+    1465: "U21 Jiu-Jitsu Men +94 kg",
+    1488: "U21 Duo Men",
+    1487: "U21 Duo Mixed",
+    1489: "U21 Duo Women",
+    1436: "U21 Fighting Women -45 kg",
+    1437: "U21 Fighting Women -48 kg",
+    1438: "U21 Fighting Women -52 kg",
+    1439: "U21 Fighting Women -57 kg",
+    1441: "U21 Fighting Women -63 kg",
+    1442: "U21 Fighting Women -70 kg",
+    1443: "U21 Fighting Women +70 kg",
+    1429: "U21 Fighting Men -56 kg",
+    1430: "U21 Fighting Men -62 kg",
+    1431: "U21 Fighting Men -69 kg",
+    1432: "U21 Fighting Men -77 kg",
+    1433: "U21 Fighting Men -85 kg",
+    1434: "U21 Fighting Men -94 kg",
+    1435: "U21 Fighting Men +94 kg",
+    1497: "U21 Show Men",
+    1498: "U21 Show Mixed",
+    1496: "U21 Show Women",
+    1491: "Adults Duo Men",
+    1492: "Adults Duo Mixed",
+    1490: "Adults Duo Women",
+    1444: "Adults Fighting Men -56 kg",
+    1451: "Adults Fighting Men -62 kg",
+    1446: "Adults Fighting Men -69 kg",
+    1447: "Adults Fighting Men -77 kg",
+    1448: "Adults Fighting Men -85 kg",
+    1449: "Adults Fighting Men -94 kg",
+    1450: "Adults Fighting Men +94 kg",
+    1452: "Adults Fighting Women -45 kg",
+    1453: "Adults Fighting Women -48 kg",
+    1454: "Adults Fighting Women -52 kg",
+    1455: "Adults Fighting Women -57 kg",
+    1456: "Adults Fighting Women -63 kg",
+    1457: "Adults Fighting Women -70 kg",
+    1458: "Adults Fighting Women +70 kg",
+    1473: "Adults Jiu-Jitsu Men -56 kg",
+    1474: "Adults Jiu-Jitsu Men -62 kg",
+    1475: "Adults Jiu-Jitsu Men -69 kg",
+    1476: "Adults Jiu-Jitsu Men -77 kg",
+    1477: "Adults Jiu-Jitsu Men -85 kg",
+    1478: "Adults Jiu-Jitsu Men -94 kg",
+    1479: "Adults Jiu-Jitsu Men +94 kg",
+    1480: "Adults Jiu-Jitsu Women -45 kg",
+    1481: "Adults Jiu-Jitsu Women -48 kg",
+    1482: "Adults Jiu-Jitsu Women -52 kg",
+    1483: "Adults Jiu-Jitsu Women -57 kg",
+    1484: "Adults Jiu-Jitsu Women -63 kg",
+    1485: "Adults Jiu-Jitsu Women -70 kg",
+    1486: "Adults Jiu-Jitsu Women +70 kg",
+    1494: "Adults Show Men",
+    1495: "Adults Show Mixed",
+    1493: "Adults Show Women"
+    }
+
 
 #  since teams categories have no country I use this quick and dirty workaround
 #  to map clubnames in sportdata api to country codes... 
@@ -163,6 +256,28 @@ def rev_look(val, dict):
 
     return key
 
+def draw_as_table(df):
+
+    fig = go.Figure(data=[go.Table(
+                    columnwidth = [50,30],
+                    header=dict(values=list(df.columns),
+                    fill_color=headerColor,
+                    align='left'),
+                    cells=dict(values=[df.name, df.cat_name],
+                        line_color='darkslategray',
+                        # 2-D list of colors for alternating rows
+                        fill_color = [[rowOddColor,rowEvenColor,rowOddColor, rowEvenColor,rowOddColor]*5],
+                        align = ['left', 'center'],
+                        font = dict(color = 'darkslategray', size = 11)
+                        ))
+                    ])
+    #fig.update_layout(
+        #autosize=False,
+        #width=110,
+        #height=110,)
+
+    return fig
+
 st.title('Team Competition')
 st.sidebar.image("https://i0.wp.com/jjeu.eu/wp-content/uploads/2018/08/jjif-logo-170.png?fit=222%2C160&ssl=1",
                  use_column_width='always')
@@ -225,9 +340,12 @@ else:
                                      help="Make sure to have a CSV with the right input")
 
     if uploaded_file is not None:
-        df_total = pd.read_csv(uploaded_file)
-    
+        df_total = pd.read_csv(uploaded_file)    
+        df_total['cat_name'] = df_total['cat_id'].replace(ID_TO_NAME)
+
         df_teams = df_total[['team_id','name', 'country_code']].groupby(['team_id', 'country_code']).count().reset_index()
+
+
 
         teams = df_teams.country_code.unique()
 
@@ -406,17 +524,106 @@ else:
 
             st.header("Selected categories - choose athletes")
 
-            col1a, col2a = st.columns(2)
-            with col1a:
 
+            headerColor = 'grey'
+            rowEvenColor = 'lightgrey'
+            rowOddColor = 'white'
+
+            col1a, col2a = st.columns(2)
+
+            with col1a:
+                pdf = FPDF()
+                pdf.add_page()
+                pdf.set_font("Arial", size = 15)
+
+                pdf.cell(200, 10, txt = teamA_name,
+                         ln = 1, align = 'C')
+                                                 
                 for i, j in enumerate(selected):
                     st.write(TEAMCAT_NAME_DICT[j])
-                    st.write(df_total['name'][(df_total['country_code'] == teamA_name) & (df_total['team_id'] == str(j))])
+                    names = df_total[['name','cat_name']][(df_total['country_code'] == teamA_name) & (df_total['team_id'] == str(j))]
+                    st.write(names)
+
+                    if j != "D":
+                        st.write(" - allowed too")
+                    names2 = df_total[['name','cat_name']][(df_total['country_code'] == teamA_name) & (df_total['team_id'].isin(TEAMCAT_ALLOWED[j]))]
+                    st.write(names2)
+
+                    pdf.cell(200, 10, txt = TEAMCAT_NAME_DICT[j],
+                         ln = 2, align = 'C')
+
+                    if(len(names)>0):
+                        fig = draw_as_table(names)
+                        png_name = str(TEAMCAT_NAME_DICT[j]) + ".png"
+                        fig.write_image(png_name)
+                        pdf.image(png_name) 
+
+                    pdf.cell(200, 10, txt = "allowed too",
+                         ln = 2, align = 'C')
+
+                    if(len(names2)>0):
+                        fig = draw_as_table(names2)
+                        png_name = str(TEAMCAT_NAME_DICT[j]) + "2.png"
+                        fig.write_image(png_name)
+                        pdf.image(png_name) 
+                        
+
+                # save the pdf with name .pdf
+                pdf.output("dummy.pdf")  
+                with open("dummy.pdf", "rb") as pdf_file:
+                    PDFbyte = pdf_file.read()
+
+                st.download_button(label="Download Team Red",
+                               data=PDFbyte,
+                               file_name='Download Team Red.pdf')
 
             with col2a:
+
+                pdf2 = FPDF()
+                pdf2.add_page()
+                pdf2.set_font("Arial", size = 15)                 
+                # create a cell
+                pdf2.cell(200, 10, txt = teamB_name,
+                         ln = 1, align = 'C')
+                                                
                 for i, j in enumerate(selected):
                     st.write(TEAMCAT_NAME_DICT[j])
-                    st.write(df_total['name'][(df_total['country_code'] == teamB_name) & (df_total['team_id'] == str(j))])
+                    namesB = df_total[['name','cat_name']][(df_total['country_code'] == teamB_name) & (df_total['team_id'] == str(j))]
+                    st.write(namesB)
+
+                    if j != "D":
+                        st.write(" - allowed too")
+                    namesB2 = df_total[['name','cat_name']][(df_total['country_code'] == teamB_name) & (df_total['team_id'].isin(TEAMCAT_ALLOWED[j]))]
+                    st.write(namesB2)
+
+                    pdf2.cell(200, 10, txt = TEAMCAT_NAME_DICT[j],
+                         ln = 2, align = 'C')
+
+                    if(len(namesB)>0):
+                        fig = draw_as_table(namesB)
+                        png_name2 = str(TEAMCAT_NAME_DICT[j]) + "B.png"
+                        fig.write_image(png_name2)
+                        pdf2.image(png_name2) 
+
+                    pdf.cell(200, 10, txt = "allowed too",
+                         ln = 2, align = 'C')
+
+                    if(len(namesB2)>0):
+                        fig = draw_as_table(namesB2)
+                        png_name2 = str(TEAMCAT_NAME_DICT[j]) + "B2.png"
+                        fig.write_image(png_name2)
+                        pdf2.image(png_name2) 
+                        
+
+                # save the pdf with name .pdf
+                pdf2.output("dummy2.pdf")  
+                with open("dummy2.pdf", "rb") as pdf_file:
+                    PDFbyte2 = pdf_file.read()
+
+                st.download_button(label="Download Team Blue",
+                               data=PDFbyte2,
+                               file_name='Download Team Blue.pdf')
+
 
 
 
