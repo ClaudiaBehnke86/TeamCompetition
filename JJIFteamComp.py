@@ -18,17 +18,44 @@ from requests.auth import HTTPBasicAuth
 import pandas as pd 
 pd.options.mode.chained_assignment = None  # default='warn'
 
+from datetime import datetime
+
 from pandas import json_normalize
 from fpdf import FPDF
+from fpdf import Template
+
 import base64
 
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
 
+class PDF(FPDF):
+    def header(self):
+        # Logo
+        self.image('Logo_real.png', 8, 8, 30)
+        # Arial bold 15
+        self.set_font('Arial', 'B', 15)
+        # Move to the right
+        self.cell(70)
+        # Title
+        self.cell(30, 10, 'Mixed Team Competition','C')
+        # Line break
+        self.ln(20)
+
+    # Page footer
+    def footer(self):
+        # Position at 1.5 cm from bottom
+        self.set_y(-15)
+        # Arial italic 8
+        self.set_font('Arial', 'I', 8)
+        # Page number
+        self.cell(0, 10, 'Printed ' + str(datetime.now().strftime('%Y-%m-%d %H:%M:%S')) + ' Page ' + str(self.page_no()) + '/{nb}', 0, 0, 'C')
+
+
+
 #  categories and short ids
 #  from outlines https://cdn.sportdata.org/96eb874d-48f8-4ed3-b58a-145b53d43de4/
 #  if you change something here make sure to also change it for TEAMCAT_TO_CATID dict!
-
 TEAMCAT_NAME_DICT = { 
     "FM1": "Adults Fighting Men -69 kg",
     "FM2": "Adults Fighting Men -85kg",
@@ -258,23 +285,39 @@ def rev_look(val, dict):
 
 def draw_as_table(df):
 
+    headerColor = 'grey'
+    rowEvenColor = 'lightgrey'
+    rowOddColor = 'white'
+    df["select"] = " "
     fig = go.Figure(data=[go.Table(
-                    columnwidth = [50,30],
-                    header=dict(values=list(df.columns),
+                    columnwidth = [10,75,35],
+                    header=dict(values=["Select", "Name", "Original Category"], # values=list(df.columns),
                     fill_color=headerColor,
+                    font = dict(family= "Arial", color = 'white', size = 12),
                     align='left'),
-                    cells=dict(values=[df.name, df.cat_name],
+                    cells=dict(values=[df.select, df.name, df.cat_name],
                         line_color='darkslategray',
                         # 2-D list of colors for alternating rows
                         fill_color = [[rowOddColor,rowEvenColor,rowOddColor, rowEvenColor,rowOddColor]*5],
-                        align = ['left', 'center'],
-                        font = dict(color = 'darkslategray', size = 11)
+                        align = ['left', 'left'],
+                        font = dict(family= "Arial", color = 'black', size = 10)
                         ))
                     ])
-    #fig.update_layout(
-        #autosize=False,
-        #width=110,
-        #height=110,)
+
+    numb_row = len(df.index)
+
+    fig.update_layout(
+        autosize=False,
+        width=600,
+        height=(numb_row+1) *25,
+        margin=dict(
+            l=20,
+            r=50,
+            b=0,
+            t=0,
+            pad=4
+            ),
+        )
 
     return fig
 
@@ -525,23 +568,28 @@ else:
             st.header("Selected categories - choose athletes")
 
 
-            headerColor = 'grey'
-            rowEvenColor = 'lightgrey'
-            rowOddColor = 'white'
-
             col1a, col2a = st.columns(2)
 
             with col1a:
-                pdf = FPDF()
+                pdf = PDF()
                 pdf.add_page()
+                pdf.alias_nb_pages()
                 pdf.set_font("Arial", size = 15)
 
                 pdf.cell(200, 10, txt = teamA_name,
                           ln = 1, align = 'C')
+
+                pdf.set_font("Arial", size = 12)
+                textA = "Match against " + str(teamB_name) +" at " + str(datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+                pdf.cell(200, 10, txt = textA,
+                          ln = 1, align = 'L')
+
+
                                                  
                 for i, j in enumerate(selected):
                     st.write(TEAMCAT_NAME_DICT[j])
                     names = df_total[['name','cat_name']][(df_total['country_code'] == teamA_name) & (df_total['team_id'] == str(j))]
+                    
                     st.write(names)
                     names2 = df_total[['name','cat_name']][(df_total['country_code'] == teamA_name) & (df_total['team_id'].isin(TEAMCAT_ALLOWED[j]))]
                     st.write(names2)
@@ -554,33 +602,19 @@ else:
                         png_name = str(TEAMCAT_NAME_DICT[j]) + ".png"
                         fig.write_image(png_name)
                         pdf.image(png_name) 
-
-                    pdf.cell(200, 10, txt = "allowed too",
-                          ln = 2, align = 'C')
-
                     if(len(names2)>0):
                         fig = draw_as_table(names2)
                         png_name = str(TEAMCAT_NAME_DICT[j]) + "2.png"
                         fig.write_image(png_name)
                         pdf.image(png_name) 
                         
-
-                # save the pdf with name .pdf
-                file = pdf.output("dummy.pdf")  
-                with open("dummy.pdf", "rb") as pdf_file:
-                     PDFbyte = pdf_file.read()
-
-                st.download_button(label="Download Team Red",
-                                data=PDFbyte,
-                                file_name='Download Team Red.pdf')
-
             with col2a:
 
-                pdf2 = FPDF()
-                pdf2.add_page()
-                pdf2.set_font("Arial", size = 15)                 
+                #pdf2 = FPDF()
+                pdf.add_page()
+                #pdf2.set_font("Arial", size = 15)                 
                 # create a cell
-                pdf2.cell(200, 10, txt = teamB_name,
+                pdf.cell(200, 10, txt = teamB_name,
                           ln = 1, align = 'C')
                                                 
                 for i, j in enumerate(selected):
@@ -590,33 +624,29 @@ else:
                     namesB2 = df_total[['name','cat_name']][(df_total['country_code'] == teamB_name) & (df_total['team_id'].isin(TEAMCAT_ALLOWED[j]))]
                     st.write(namesB2)
 
-                    pdf2.cell(200, 10, txt = TEAMCAT_NAME_DICT[j],
+                    pdf.cell(200, 10, txt = TEAMCAT_NAME_DICT[j],
                           ln = 2, align = 'C')
 
                     if(len(namesB)>0):
                          fig = draw_as_table(namesB)
                          png_name2 = str(TEAMCAT_NAME_DICT[j]) + "B.png"
                          fig.write_image(png_name2)
-                         pdf2.image(png_name2) 
-
-                    pdf2.cell(200, 10, txt = "allowed too",
-                          ln = 2, align = 'C')
-
+                         pdf.image(png_name2) 
                     if(len(namesB2)>0):
                         fig = draw_as_table(namesB2)
                         png_name2 = str(TEAMCAT_NAME_DICT[j]) + "B2.png"
                         fig.write_image(png_name2)
-                        pdf2.image(png_name2) 
+                        pdf.image(png_name2) 
                         
 
                 # save the pdf with name .pdf
-                pdf2.output("dummy2.pdf")  
-                with open("dummy2.pdf", "rb") as pdf_file:
-                     PDFbyte2 = pdf_file.read()
+            pdf.output("dummy.pdf")  
+            with open("dummy.pdf", "rb") as pdf_file:
+                PDFbyte = pdf_file.read()
 
-                st.download_button(label="Download Team Blue",
-                                data=PDFbyte2,
-                                file_name='Download Team Blue.pdf')
+            st.download_button(label="Download Team lists",
+                            data=PDFbyte,
+                            file_name='Download Teams.pdf')
 
 
 
