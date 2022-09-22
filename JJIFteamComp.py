@@ -576,12 +576,12 @@ else:
 
             with col2a:
 
-                # pdf2 = FPDF()
-                # pdf2.add_page()
-                # pdf2.set_font("Arial", size = 15)                 
-                # # create a cell
-                # pdf2.cell(200, 10, txt = teamB_name,
-                #          ln = 1, align = 'C')
+                pdf2 = FPDF()
+                pdf2.add_page()
+                pdf2.set_font("Arial", size = 15)                 
+                # create a cell
+                pdf2.cell(200, 10, txt = teamB_name,
+                          ln = 1, align = 'C')
                                                 
                 for i, j in enumerate(selected):
                     st.write(TEAMCAT_NAME_DICT[j])
@@ -590,33 +590,33 @@ else:
                     namesB2 = df_total[['name','cat_name']][(df_total['country_code'] == teamB_name) & (df_total['team_id'].isin(TEAMCAT_ALLOWED[j]))]
                     st.write(namesB2)
 
-                    # pdf2.cell(200, 10, txt = TEAMCAT_NAME_DICT[j],
-                    #      ln = 2, align = 'C')
+                    pdf2.cell(200, 10, txt = TEAMCAT_NAME_DICT[j],
+                          ln = 2, align = 'C')
 
-                    # if(len(namesB)>0):
-                    #     fig = draw_as_table(namesB)
-                    #     png_name2 = str(TEAMCAT_NAME_DICT[j]) + "B.png"
-                    #     fig.write_image(png_name2)
-                    #     pdf2.image(png_name2) 
+                    if(len(namesB)>0):
+                         fig = draw_as_table(namesB)
+                         png_name2 = str(TEAMCAT_NAME_DICT[j]) + "B.png"
+                         fig.write_image(png_name2)
+                         pdf2.image(png_name2) 
 
-                    # pdf.cell(200, 10, txt = "allowed too",
-                    #      ln = 2, align = 'C')
+                    pdf2.cell(200, 10, txt = "allowed too",
+                          ln = 2, align = 'C')
 
-                    # if(len(namesB2)>0):
-                    #     fig = draw_as_table(namesB2)
-                    #     png_name2 = str(TEAMCAT_NAME_DICT[j]) + "B2.png"
-                    #     fig.write_image(png_name2)
-                    #     pdf2.image(png_name2) 
+                    if(len(namesB2)>0):
+                        fig = draw_as_table(namesB2)
+                        png_name2 = str(TEAMCAT_NAME_DICT[j]) + "B2.png"
+                        fig.write_image(png_name2)
+                        pdf2.image(png_name2) 
                         
 
                 # save the pdf with name .pdf
-                # pdf2.output("dummy2.pdf")  
-                # with open("dummy2.pdf", "rb") as pdf_file:
-                #     PDFbyte2 = pdf_file.read()
+                pdf2.output("dummy2.pdf")  
+                with open("dummy2.pdf", "rb") as pdf_file:
+                     PDFbyte2 = pdf_file.read()
 
-                # st.download_button(label="Download Team Blue",
-                #                data=PDFbyte2,
-                #                file_name='Download Team Blue.pdf')
+                st.download_button(label="Download Team Blue",
+                                data=PDFbyte2,
+                                file_name='Download Team Blue.pdf')
 
 
 
