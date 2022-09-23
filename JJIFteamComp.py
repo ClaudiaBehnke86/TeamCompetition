@@ -58,15 +58,15 @@ class PDF(FPDF):
 #  if you change something here make sure to also change it for TEAMCAT_TO_CATID dict!
 TEAMCAT_NAME_DICT = { 
     "FM1": "Adults Fighting Men -69 kg",
-    "FM2": "Adults Fighting Men -85kg",
-    "FM3": "Adults Fighting Men +85kg",
+    "FM2": "Adults Fighting Men -85 kg",
+    "FM3": "Adults Fighting Men +85 kg",
     "FW1": "Adults Fighting Women -52 kg",
     "FW2": "Adults Fighting Women -63 kg",
     "FW3": "Adults Fighting Women +63 kg",
     "JM1": "Adults Jiu-Jitsu Men -69 kg",
     "JM2": "Adults Jiu-Jitsu Men -85 kg",
     "JM3": "Adults Jiu-Jitsu Men +85 kg",
-    "JW1": "Adults Jiu-Jitsu Women -52",
+    "JW1": "Adults Jiu-Jitsu Women -52 kg",
     "JW2": "Adults Jiu-Jitsu Women -63 kg",
     "JW3": "Adults Jiu-Jitsu Women +63 kg",
     "D": "Adults Duo"}
@@ -106,74 +106,74 @@ TEAMCAT_ALLOWED = {
 }
 
 ID_TO_NAME = {
-    1466: "U21 Jiu-Jitsu Women -45 kg",
-    1467: "U21 Jiu-Jitsu Women -48 kg",
-    1468: "U21 Jiu-Jitsu Women -52 kg",
-    1469: "U21 Jiu-Jitsu Women -57 kg",
-    1470: "U21 Jiu-Jitsu Women -63 kg",
-    1471: "U21 Jiu-Jitsu Women -70 kg",
-    1472: "U21 Jiu-Jitsu Women +70 kg",
-    1459: "U21 Jiu-Jitsu Men -56 kg",
-    1460: "U21 Jiu-Jitsu Men -62 kg",
-    1461: "U21 Jiu-Jitsu Men -69 kg",
-    1462: "U21 Jiu-Jitsu Men -77 kg",
-    1463: "U21 Jiu-Jitsu Men -85 kg",
-    1464: "U21 Jiu-Jitsu Men -94 kg",
-    1465: "U21 Jiu-Jitsu Men +94 kg",
-    1488: "U21 Duo Men",
-    1487: "U21 Duo Mixed",
-    1489: "U21 Duo Women",
-    1436: "U21 Fighting Women -45 kg",
-    1437: "U21 Fighting Women -48 kg",
-    1438: "U21 Fighting Women -52 kg",
-    1439: "U21 Fighting Women -57 kg",
-    1441: "U21 Fighting Women -63 kg",
-    1442: "U21 Fighting Women -70 kg",
-    1443: "U21 Fighting Women +70 kg",
-    1429: "U21 Fighting Men -56 kg",
-    1430: "U21 Fighting Men -62 kg",
-    1431: "U21 Fighting Men -69 kg",
-    1432: "U21 Fighting Men -77 kg",
-    1433: "U21 Fighting Men -85 kg",
-    1434: "U21 Fighting Men -94 kg",
-    1435: "U21 Fighting Men +94 kg",
-    1497: "U21 Show Men",
-    1498: "U21 Show Mixed",
-    1496: "U21 Show Women",
-    1491: "Adults Duo Men",
-    1492: "Adults Duo Mixed",
-    1490: "Adults Duo Women",
-    1444: "Adults Fighting Men -56 kg",
-    1451: "Adults Fighting Men -62 kg",
-    1446: "Adults Fighting Men -69 kg",
-    1447: "Adults Fighting Men -77 kg",
-    1448: "Adults Fighting Men -85 kg",
-    1449: "Adults Fighting Men -94 kg",
-    1450: "Adults Fighting Men +94 kg",
-    1452: "Adults Fighting Women -45 kg",
-    1453: "Adults Fighting Women -48 kg",
-    1454: "Adults Fighting Women -52 kg",
-    1455: "Adults Fighting Women -57 kg",
-    1456: "Adults Fighting Women -63 kg",
-    1457: "Adults Fighting Women -70 kg",
-    1458: "Adults Fighting Women +70 kg",
-    1473: "Adults Jiu-Jitsu Men -56 kg",
-    1474: "Adults Jiu-Jitsu Men -62 kg",
-    1475: "Adults Jiu-Jitsu Men -69 kg",
-    1476: "Adults Jiu-Jitsu Men -77 kg",
-    1477: "Adults Jiu-Jitsu Men -85 kg",
-    1478: "Adults Jiu-Jitsu Men -94 kg",
-    1479: "Adults Jiu-Jitsu Men +94 kg",
-    1480: "Adults Jiu-Jitsu Women -45 kg",
-    1481: "Adults Jiu-Jitsu Women -48 kg",
-    1482: "Adults Jiu-Jitsu Women -52 kg",
-    1483: "Adults Jiu-Jitsu Women -57 kg",
-    1484: "Adults Jiu-Jitsu Women -63 kg",
-    1485: "Adults Jiu-Jitsu Women -70 kg",
-    1486: "Adults Jiu-Jitsu Women +70 kg",
-    1494: "Adults Show Men",
-    1495: "Adults Show Mixed",
-    1493: "Adults Show Women"
+    "1466": "U21 Jiu-Jitsu Women -45 kg",
+    "1467": "U21 Jiu-Jitsu Women -48 kg",
+    "1468": "U21 Jiu-Jitsu Women -52 kg",
+    "1469": "U21 Jiu-Jitsu Women -57 kg",
+    "1470": "U21 Jiu-Jitsu Women -63 kg",
+    "1471": "U21 Jiu-Jitsu Women -70 kg",
+    "1472": "U21 Jiu-Jitsu Women +70 kg",
+    "1459": "U21 Jiu-Jitsu Men -56 kg",
+    "1460": "U21 Jiu-Jitsu Men -62 kg",
+    "1461": "U21 Jiu-Jitsu Men -69 kg",
+    "1462": "U21 Jiu-Jitsu Men -77 kg",
+    "1463": "U21 Jiu-Jitsu Men -85 kg",
+    "1464": "U21 Jiu-Jitsu Men -94 kg",
+    "1465": "U21 Jiu-Jitsu Men +94 kg",
+    "1488": "U21 Duo Men",
+    "1487": "U21 Duo Mixed",
+    "1489": "U21 Duo Women",
+    "1436": "U21 Fighting Women -45 kg",
+    "1437": "U21 Fighting Women -48 kg",
+    "1438": "U21 Fighting Women -52 kg",
+    "1439": "U21 Fighting Women -57 kg",
+    "1441": "U21 Fighting Women -63 kg",
+    "1442": "U21 Fighting Women -70 kg",
+    "1443": "U21 Fighting Women +70 kg",
+    "1429": "U21 Fighting Men -56 kg",
+    "1430": "U21 Fighting Men -62 kg",
+    "1431": "U21 Fighting Men -69 kg",
+    "1432": "U21 Fighting Men -77 kg",
+    "1433": "U21 Fighting Men -85 kg",
+    "1434": "U21 Fighting Men -94 kg",
+    "1435": "U21 Fighting Men +94 kg",
+    "1497": "U21 Show Men",
+    "1498": "U21 Show Mixed",
+    "1496": "U21 Show Women",
+    "1491": "Adults Duo Men",
+    "1492": "Adults Duo Mixed",
+    "1490": "Adults Duo Women",
+    "1444": "Adults Fighting Men -56 kg",
+    "1451": "Adults Fighting Men -62 kg",
+    "1446": "Adults Fighting Men -69 kg",
+    "1447": "Adults Fighting Men -77 kg",
+    "1448": "Adults Fighting Men -85 kg",
+    "1449": "Adults Fighting Men -94 kg",
+    "1450": "Adults Fighting Men +94 kg",
+    "1452": "Adults Fighting Women -45 kg",
+    "1453": "Adults Fighting Women -48 kg",
+    "1454": "Adults Fighting Women -52 kg",
+    "1455": "Adults Fighting Women -57 kg",
+    "1456": "Adults Fighting Women -63 kg",
+    "1457": "Adults Fighting Women -70 kg",
+    "1458": "Adults Fighting Women +70 kg",
+    "1473": "Adults Jiu-Jitsu Men -56 kg",
+    "1474": "Adults Jiu-Jitsu Men -62 kg",
+    "1475": "Adults Jiu-Jitsu Men -69 kg",
+    "1476": "Adults Jiu-Jitsu Men -77 kg",
+    "1477": "Adults Jiu-Jitsu Men -85 kg",
+    "1478": "Adults Jiu-Jitsu Men -94 kg",
+    "1479": "Adults Jiu-Jitsu Men +94 kg",
+    "1480": "Adults Jiu-Jitsu Women -45 kg",
+    "1481": "Adults Jiu-Jitsu Women -48 kg",
+    "1482": "Adults Jiu-Jitsu Women -52 kg",
+    "1483": "Adults Jiu-Jitsu Women -57 kg",
+    "1484": "Adults Jiu-Jitsu Women -63 kg",
+    "1485": "Adults Jiu-Jitsu Women -70 kg",
+    "1486": "Adults Jiu-Jitsu Women +70 kg",
+    "1494": "Adults Show Men",
+    "1495": "Adults Show Mixed",
+    "1493": "Adults Show Women"
     }
 
 
@@ -215,14 +215,16 @@ def get_athletes_cat(eventid, cat_id, user, password):
             df_out['name'] = df_out['first'] + " " + df_out['last']
             df = df_out[['name' , 'country_code']]
             # add the origial category id
-            df['cat_id'] = str(cat_id)
+            df['cat_id'] = cat_id
+            df['cat_name'] = df['cat_id'].replace(ID_TO_NAME)
         else:
             # for an unclear reason teams to no have a country code...
             # convert club name to country using dict...
             df_out['country_code'] = df_out['club_name'].replace(CLUBNAME_COUNTRY_MAP)
             df_out['name'].replace(",", "/", regex=True, inplace=True)
             df = df_out[['name', 'country_code']]
-            df['cat_id'] = str(cat_id)
+            df['cat_id'] = cat_id
+            df['cat_name'] = df['cat_id'].replace(ID_TO_NAME)
     else:
         # just return empty datafram
         df =pd.DataFrame()
@@ -290,7 +292,7 @@ def draw_as_table(df):
     rowOddColor = 'white'
     df["select"] = " "
     fig = go.Figure(data=[go.Table(
-                    columnwidth = [10,75,35],
+                    columnwidth = [10,73,37],
                     header=dict(values=["Select", "Name", "Original Category"], # values=list(df.columns),
                     fill_color=headerColor,
                     font = dict(family= "Arial", color = 'white', size = 12),
@@ -337,18 +339,22 @@ if page == 'Preparation':
         # create empty temporary list for catgories to merge into team categories
         list_df_new_total = []
 
-        for x in TEAMCAT_TO_CATID:
-            ids = TEAMCAT_TO_CATID.get(x)
-            list_df_new = []
-            for id_num in ids:
-                athletes_cat = get_athletes_cat(str(sd_key),
-                                                str(id_num),
-                                                st.secrets['user'],
-                                                st.secrets['password'])
-                list_df_new.append(athletes_cat)
-                df_new = pd.concat(list_df_new)
-                df_new['team_id'] = str(x)
-            list_df_new_total.append(df_new)
+        my_bar = st.progress(0)
+        with st.spinner('Read in data'):
+            for i,x in enumerate(TEAMCAT_TO_CATID):
+                ids = TEAMCAT_TO_CATID.get(x)
+                list_df_new = []
+                for id_num in ids:
+                    athletes_cat = get_athletes_cat(str(sd_key),
+                                                    str(id_num),
+                                                    st.secrets['user'],
+                                                    st.secrets['password'])
+                    list_df_new.append(athletes_cat)
+                    df_new = pd.concat(list_df_new)
+                    df_new['team_id'] = str(x)
+                list_df_new_total.append(df_new)
+            my_bar.progress((i+1)/len(TEAMCAT_TO_CATID))
+
     df_total = pd.concat(list_df_new_total)
     df_teams = df_total[['team_id','name', 'country_code']].groupby(['team_id', 'country_code']).count().reset_index()
 
@@ -374,6 +380,70 @@ if page == 'Preparation':
         file_name="Data.csv",
         mime="csv")
 
+
+    pdf_sel = PDF()
+
+    for k in teams:
+
+        pdf_sel.add_page()
+        pdf_sel.set_font("Arial", size = 25)
+        pdf_sel.cell(200, 20, txt = "Registration Team " + k,
+              ln = 1, align = 'C')
+        pdf_sel.alias_nb_pages()
+        pdf_sel.set_font("Arial", size = 15)
+
+        pdf_sel.cell(200, 10, txt = "Please select up to two athlets per category",
+              ln = 1, align = 'L')
+
+        for i in TEAMCAT_NAME_DICT:
+            names_sel = df_total[['name','cat_name']][(df_total['country_code'] == k) & (df_total['team_id'] == str(i))]
+            pdf_sel.cell(200, 10, txt = TEAMCAT_NAME_DICT[i],
+                  ln = 2, align = 'C')
+
+            if(len(names_sel)>0):
+                fig = draw_as_table(names_sel)
+                png_name = str(TEAMCAT_NAME_DICT[i]) + str(k) + "sel.png"
+                fig.write_image(png_name)
+                pdf_sel.image(png_name) 
+
+
+        pdf_sel.alias_nb_pages()
+        pdf_sel.set_font("Arial", size = 12)        
+        
+        pdf_sel.cell(200, 10, txt = "You can add up to two athlets. A Duo team counts as one athlete",
+              ln = 1, align = 'L')
+
+        pdf_sel.cell(200, 10, txt = "_____________   ______________________________      _________________________",
+              ln = 1, align = 'L')
+
+        pdf_sel.cell(200, 10, txt = "Team Category     Name, First Name                                   Original Category",
+              ln = 1, align = 'L')
+
+        pdf_sel.cell(200, 10, txt = "_____________   ______________________________      _________________________",
+              ln = 1, align = 'L')
+
+        pdf_sel.cell(200, 10, txt = "Team Category     Name, First Name                                   Original Category",
+              ln = 1, align = 'L')
+
+
+        pdf_sel.cell(200, 30, txt = "I hereby declare that the team selection is final and can not be changed anymore.",
+              ln = 1, align = 'L')
+
+        pdf_sel.cell(200, 30, txt = "_______________________                             _________________________",
+              ln = 1, align = 'L')
+
+        pdf_sel.cell(200, 10, txt = "Confirmation Team  "+ k +"                                     Confirmation OC ",
+              ln = 1, align = 'L')
+
+    pdf_sel.output("dummy2.pdf")  
+    with open("dummy2.pdf", "rb") as pdf_file:
+        PDFbyte2 = pdf_file.read()
+
+    st.download_button(label="Download Team  Registration lists",
+                       data=PDFbyte2,
+                       file_name='Download Teams Registration.pdf')        
+
+
 else:
         
     # Main programm starts here
@@ -384,8 +454,7 @@ else:
 
     if uploaded_file is not None:
         df_total = pd.read_csv(uploaded_file)    
-        df_total['cat_name'] = df_total['cat_id'].replace(ID_TO_NAME)
-
+        
         df_teams = df_total[['team_id','name', 'country_code']].groupby(['team_id', 'country_code']).count().reset_index()
 
 
@@ -585,10 +654,13 @@ else:
                           ln = 1, align = 'L')
 
 
+
                                                  
                 for i, j in enumerate(selected):
                     st.write(TEAMCAT_NAME_DICT[j])
-                    names = df_total[['name','cat_name']][(df_total['country_code'] == teamA_name) & (df_total['team_id'] == str(j))]
+
+                    st.write(j)
+                    names = df_total[['name','cat_name']][(df_total['country_code'] == teamA_name) & (df_total['team_id'] == j)]
                     
                     st.write(names)
                     names2 = df_total[['name','cat_name']][(df_total['country_code'] == teamA_name) & (df_total['team_id'].isin(TEAMCAT_ALLOWED[j]))]
@@ -610,13 +682,17 @@ else:
                         
             with col2a:
 
-                #pdf2 = FPDF()
-                pdf.add_page()
-                #pdf2.set_font("Arial", size = 15)                 
-                # create a cell
+                pdf.alias_nb_pages()
+                pdf.set_font("Arial", size = 15)
+
                 pdf.cell(200, 10, txt = teamB_name,
                           ln = 1, align = 'C')
-                                                
+
+                pdf.set_font("Arial", size = 12)
+                textB = "Match against " + str(teamA_name) +" at " + str(datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+                pdf.cell(200, 10, txt = textB,
+                          ln = 1, align = 'L')
+
                 for i, j in enumerate(selected):
                     st.write(TEAMCAT_NAME_DICT[j])
                     namesB = df_total[['name','cat_name']][(df_total['country_code'] == teamB_name) & (df_total['team_id'] == str(j))]
@@ -647,83 +723,6 @@ else:
             st.download_button(label="Download Team lists",
                             data=PDFbyte,
                             file_name='Download Teams.pdf')
-
-
-
-
-# with sel1:
-#     st.markdown(f'<p style="background-color:#000000;border-radius:2%;">{tA}</p>', unsafe_allow_html=True)
-# with sel2:
-#     st.markdown(f'<p style="background-color:#000000;border-radius:2%;">{tB_c1}</p>', unsafe_allow_html=True)
-# with sel3:
-#     st.markdown(f'<p style="background-color:#000000;border-radius:2%;">{tB}</p>', unsafe_allow_html=True)
-# with sel4:
-#     st.markdown(f'<p style="background-color:#000000;border-radius:2%;">{tB_c2}</p>', unsafe_allow_html=True)
-
-# # variable with all remaining categoies
-# result_over = [x for x in result_st if x not in exclude]
-# with st.expander("Categories in random draw"):
-#     st.write("These categories exist in at least one team and were not selected")
-#     st.write(result_over)
-
-# # calculate probabilities
-
-# try:
-#     random = intersection_teams_str[4]
-#     st.sidebar.write(random)
-# except IndexError:
-# # create some columns to display the choices
-#     if(len(result_over)>1 and len(result_over)<3):
-#         random = st.sidebar.selectbox('Choice 5',
-#                                  help="Choose category",
-#                                  options=[x for x in result_st if x not in exclude])
-#         st.write(random)
-#         st.write("Selection")
-#         st.markdown("""---""")
-
-#     elif(len(result_over)>0):
-
-#         good_teamA = (len([x for x in teamA_str if x not in exclude])/len(result_over))*100
-#         good_teamB = (len([x for x in teamB_str if x not in exclude])/len(result_over))*100
-
-
-#          # display probabilties for teams
-#         with st.expander("Display probabilties for teams"):
-#             teams_sel = [teamB_name, teamA_name]
-#             values = [good_teamB, good_teamA]
-#             fig1 = go.Figure(go.Bar(
-#                          x=[good_teamA, good_teamB],
-#                          y=[teamA_name, teamB_name],
-#                          text=[teamA_str, teamB_str],
-#                          marker_color=['#F31C2B', '#0090CE'],
-#                          orientation='h'))
-#             fig1.update_xaxes(title_text='Chances for "good" category [%]', range=(0, 100))
-#             fig1.update_yaxes(title_text='Teams')
-#             st.plotly_chart(fig1)
-
-#         if st.sidebar.button('Select Random Category',
-#                               help="press this button to choose random category"):
-#              # random choice from all leftover categories
-#             randcat = random.choice(result_over)
-        
-#             # display random cat
-#             st.write(randcat)
-#             st.write("Selection")
-#             st.markdown("""---""")
-
-
-#             # show some messages if the category is in
-#             with col1:
-#                 if randcat in teamA_str:
-#                     st.success(str(randcat) + ' is in ' + teamA_name)
-#                 else:
-#                     st.error(str(randcat) + ' is NOT in ' + teamA_name)
-#             with col2:
-#                 if randcat in teamB_str:
-#                     st.success(str(randcat) + ' is in ' + teamB_name)
-#                 else:
-#                     st.error(str(randcat) + ' is NOT in ' + teamB_name)
-
 
 st.sidebar.markdown('<a href="mailto:sportdirector@jjif.org">Contact for problems</a>', unsafe_allow_html=True)
 
