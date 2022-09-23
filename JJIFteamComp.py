@@ -19,6 +19,7 @@ import pandas as pd
 pd.options.mode.chained_assignment = None  # default='warn'
 
 from datetime import datetime
+from datetime import timedelta
 
 from pandas import json_normalize
 from fpdf import FPDF
@@ -323,6 +324,54 @@ def draw_as_table(df):
 
     return fig
 
+def draw_as_table_teamID(df):
+
+    headerColor = 'grey'
+    rowEvenColor = 'lightgrey'
+    rowOddColor = 'white'
+    df["select"] = " "
+    fig = go.Figure(data=[go.Table(
+                    columnwidth = [10,73,37],
+                    header=dict(values=["Select", "Team Categories"],
+                    fill_color=headerColor,
+                    font = dict(family= "Arial", color = 'white', size = 12),
+                    align='left'),
+                    cells=dict(values=[df.select, df.team_cats],
+                        line_color='darkslategray',
+                        # 2-D list of colors for alternating rows
+                        fill_color = [[rowOddColor,rowEvenColor,rowOddColor, rowEvenColor,rowOddColor]*5],
+                        align = ['left', 'left'],
+                        font = dict(family= "Arial", color = 'black', size = 10)
+                        ))
+                    ])
+
+    numb_row = len(df.index)
+
+    fig.update_layout(
+        autosize=False,
+        width=600,
+        height=(numb_row+1) *25,
+        margin=dict(
+            l=20,
+            r=50,
+            b=0,
+            t=0,
+            pad=4
+            ),
+        )
+
+    return fig
+
+def confirm_text(team, give_time):
+    confirm_txt = "Please return this sheet latest at " + str((datetime.now() + timedelta(minutes = give_time)).strftime('%Y-%m-%d %H:%M')) +"\n \
+I hereby declare that the team selection is final and can not be changed anymore. \n \
+                                                                                                \n \
+                                                                                                \n \
+_______________________                             _________________________ \n \
+Confirmation Team  "+ str(team) +"                                     Confirmation OC "
+
+    return confirm_txt          
+
 st.title('Team Competition')
 st.sidebar.image("https://i0.wp.com/jjeu.eu/wp-content/uploads/2018/08/jjif-logo-170.png?fit=222%2C160&ssl=1",
                  use_column_width='always')
@@ -381,7 +430,6 @@ if page == 'Preparation':
         file_name="Data.csv",
         mime="csv")
 
-
     pdf_sel = PDF()
 
     for k in teams:
@@ -392,7 +440,6 @@ if page == 'Preparation':
               ln = 1, align = 'C')
         pdf_sel.alias_nb_pages()
         pdf_sel.set_font("Arial", size = 15)
-
         pdf_sel.cell(200, 10, txt = "Please select up to two athlets per category",
               ln = 1, align = 'L')
 
@@ -411,30 +458,18 @@ if page == 'Preparation':
         pdf_sel.alias_nb_pages()
         pdf_sel.set_font("Arial", size = 12)        
         
-        pdf_sel.cell(200, 10, txt = "You can add up to two athlets. A Duo team counts as one athlete",
+        pdf_sel.cell(200, 6, txt = "You can add up to two athlets. A Duo team counts as one athlete",
               ln = 1, align = 'L')
-
-        pdf_sel.cell(200, 10, txt = "_____________   ______________________________      _________________________",
+        pdf_sel.cell(200, 15, txt = "_____________   ______________________________      _________________________",
               ln = 1, align = 'L')
-
-        pdf_sel.cell(200, 10, txt = "Team Category     Name, First Name                                   Original Category",
+        pdf_sel.cell(200, 6, txt = "Team Category     Name, First Name                                   Original Category",
               ln = 1, align = 'L')
-
-        pdf_sel.cell(200, 10, txt = "_____________   ______________________________      _________________________",
+        pdf_sel.cell(200, 15, txt = "_____________   ______________________________      _________________________",
               ln = 1, align = 'L')
-
-        pdf_sel.cell(200, 10, txt = "Team Category     Name, First Name                                   Original Category",
+        pdf_sel.cell(200, 6, txt = "Team Category     Name, First Name                                   Original Category",
               ln = 1, align = 'L')
+        pdf_sel.multi_cell(200, 6, txt = confirm_text(str(k),120), align = 'L')
 
-
-        pdf_sel.cell(200, 30, txt = "I hereby declare that the team selection is final and can not be changed anymore.",
-              ln = 1, align = 'L')
-
-        pdf_sel.cell(200, 30, txt = "_______________________                             _________________________",
-              ln = 1, align = 'L')
-
-        pdf_sel.cell(200, 10, txt = "Confirmation Team  "+ k +"                                     Confirmation OC ",
-              ln = 1, align = 'L')
 
     pdf_sel.output("dummy2.pdf")  
     with open("dummy2.pdf", "rb") as pdf_file:
@@ -443,7 +478,6 @@ if page == 'Preparation':
     st.download_button(label="Download Team  Registration lists",
                        data=PDFbyte2,
                        file_name='Download Teams Registration.pdf')        
-
 
 else:
         
@@ -494,7 +528,9 @@ else:
                 for i in teamB:
                     st.write(TEAMCAT_NAME_DICT[i])
 
+        team_sel = [teamA_name,teamB_name]
         # calc and display overlap between red and blue
+
         result = calc_overlap(teamA, teamB)
         intersection_teams = intersection(teamA, teamB)
 
@@ -504,9 +540,15 @@ else:
             intersection_teams_str = [TEAMCAT_NAME_DICT.get(item, item) for item in intersection_teams]
             st.write(intersection_teams_str)
 
+        #make a new df for drawing 
+        df_inters = pd.DataFrame(intersection_teams_str, columns =['team_cats'])
+
         # which categories exist in at least one team
         result_st = [TEAMCAT_NAME_DICT.get(item, item) for item in result]
-        result_st_sel = [x for x in result_st if x not in intersection_teams_str]
+        result_st_selectable = [x for x in result_st if x not in intersection_teams_str]
+
+        #make a new df for drawing 
+        df_selectable = pd.DataFrame(result_st_selectable, columns =['team_cats'])
 
         #list to add categories that are already selected
         exclude = []
@@ -515,6 +557,9 @@ else:
 
         # for confirm button (to avoid direct display of matches)
         confirm = False
+
+        # text to be printed on the pdfs
+        text_match = "Match: "+ str(team_sel[0]) +" against " + str(team_sel[1]) +". Printed at " + str(datetime.now().strftime('%Y-%m-%d %H:%M'))
 
         #3 cases:   
         if len(intersection_teams) == MATCHES:
@@ -535,15 +580,45 @@ else:
             st.write('Remove ' +str(overhead_cat)+ ' categories')
 
             selected = intersection_teams
-
+            
             if(overhead_cat // 2) != 0:
-                st.write("- Each team can choose "+ str(overhead_cat // 2)+" categories to remove")
+
+                text_remove = "- Please choose "+ str(overhead_cat // 2)+" categories to remove"
+                st.write(text_remove)
+
+                pdf_remove = PDF()
+            
+                for k, l in enumerate(team_sel): 
+                    pdf_remove.add_page()
+                    pdf_remove.alias_nb_pages()
+                    pdf_remove.set_font("Arial", size = 15)
+                    pdf_remove.cell(200, 10, txt = str(l), ln = 1, align = 'C')
+                    pdf_remove.set_font("Arial", size = 12)
+                    pdf_remove.cell(200, 6, txt = text_match, ln = 1, align = 'L')                                                 
+                    pdf_remove.cell(200, 6, txt = text_remove, ln = 1, align = 'L')
+
+                    pdf_remove.cell(200, 6, txt = "Enter 1,2,3,.. under selection", ln = 1, align = 'L')
+
+                    fig_remove = draw_as_table_teamID(df_inters)
+                    png_name = "remove.png"
+                    fig_remove.write_image(png_name)
+                    pdf_remove.image(png_name) 
+                    pdf_remove.multi_cell(200, 6, txt = confirm_text(str(l),15), align = 'L')
+
+                # save the pdf with name .pdf
+                pdf_remove.output("dummy3.pdf")  
+                with open("dummy3.pdf", "rb") as pdf_file:
+                    PDFbyte = pdf_file.read()    
+
+                st.download_button(label="Download Remove lists",
+                data=PDFbyte,
+                file_name='Download Remove lists.pdf')    
+
             if(overhead_cat % 2) != 0: 
                 st.write("- There will be a random choice between the categories")
 
             # remove always 2 categories
             while overhead_cat >= 2:
-
                 tA = st.sidebar.selectbox('Choice Red',
                                           help="Choose category to remove",
                                           options=[TEAMCAT_NAME_DICT[x] for x in selected])
@@ -592,28 +667,66 @@ else:
             # add always 2 categories
             with st.expander("Selectable categories"):
                 st.write("These categories exist in only one of the teams")
-                st.write(result_st_sel)
+                st.write(result_st_selectable)
 
-            if(miss_cat > len(result_st_sel)):
-                miss_cat = len(result_st_sel) 
-                st.error("There are not enough categories to choose from! Reduce selectable categories to " + str(miss_cat), icon="🚨") 
+            if(miss_cat > len(result_st_selectable)):
+                miss_cat = len(result_st_selectable) 
+                st.error("There are not enough categories to choose from! Selectable categories are reduceed  to " + str(miss_cat), icon="🚨") 
                 
             if(miss_cat // 2) != 0:
-                st.write("- Each team can choose "+ str(miss_cat // 2)+" categories to add")
+ 
+                text_add = "- Each team can choose "+ str(miss_cat // 2)+" categories to add"
+                st.write(text_add)
+                pdf_add = PDF()
+            
+                for k, l in enumerate(team_sel): 
+                    pdf_add.add_page()
+                    pdf_add.alias_nb_pages()
+                    pdf_add.set_font("Arial", size = 15)
+                    pdf_add.cell(200, 10, txt = str(l), ln = 1, align = 'C')
+                    pdf_add.set_font("Arial", size = 12)
+                    pdf_add.cell(200, 6, txt = text_match, ln = 1, align = 'L')
+                    pdf_add.cell(200, 6, txt = "Those categories will happen", ln = 1, align = 'C')
+                    fig_add_sel = draw_as_table_teamID(df_inters)
+                    png_name = "add_sel.png"
+                    fig_add_sel.write_image(png_name)
+                    pdf_add.image(png_name) 
+                    pdf_add.cell(200, 6, txt = "Please choose the categories to add", ln = 1, align = 'C')
+                    pdf_add.cell(200, 6, txt = text_add, ln = 1, align = 'L')
+                    pdf_add.cell(200, 6, txt = " ", ln = 1, align = 'L')
+                    fig_add = draw_as_table_teamID(df_selectable)
+                    png_name = "remove.png"
+                    fig_add.write_image(png_name)
+                    pdf_add.image(png_name) 
+                    pdf_add.multi_cell(200, 6, txt = confirm_text(str(l),15), align = 'L')
+                    if(miss_cat % 2) != 0: 
+                        pdf_add.cell(200, 10, txt = "There will be a random choice between the categories", ln = 1, align = 'L')
+
+                # save the pdf with name .pdf
+                pdf_add.output("dummy4.pdf")  
+                with open("dummy4.pdf", "rb") as pdf_file:
+                    PDFbyte = pdf_file.read()    
+
+                st.download_button(label="Download Adding lists",
+                data=PDFbyte,
+                file_name='Download Adding lists.pdf')       
+
+
+
             if(miss_cat % 2) != 0: 
                 st.write("- There will be a random choice between the categories")
             while miss_cat >= 2:
                 
                 tA = st.sidebar.selectbox('Choice Red',
                                           help="Choose category",
-                                          options=[x for x in result_st_sel if x not in exclude])
+                                          options=[x for x in result_st_selectable if x not in exclude])
                 # revese lookup of key
                 selected.append(rev_look(tA, TEAMCAT_NAME_DICT))
                 exclude.append(tA)
 
                 tB = st.sidebar.selectbox('Choice Blue',
                                          help="Choose category",
-                                         options=[x for x in result_st_sel if x not in exclude])
+                                         options=[x for x in result_st_selectable if x not in exclude])
                 selected.append(rev_look(tB, TEAMCAT_NAME_DICT))
                 exclude.append(tB)
 
@@ -625,7 +738,7 @@ else:
                 if st.sidebar.button('Select Random Category',
                                       help="press this button to choose random category"):
                     # random choice from all leftover categories
-                    result_over = [x for x in result_st_sel if x not in exclude]
+                    result_over = [x for x in result_st_selectable if x not in exclude]
                     randcat = random.choice(result_over)
                     # display random cat
                     st.sidebar.markdown(f'<p style="background-color:#000000;border-radius:4%;">{randcat}</p>', unsafe_allow_html=True)
@@ -636,26 +749,22 @@ else:
             else:
                 # button to avoid immediate display of categories
                 confirm = st.sidebar.button('Confirm Selection')      
-
+        else:
+            st.error("You should never ever see this...", icon="🚨") 
+                
         if((len(selected) == MATCHES) & (confirm == True)):
             st.header("Selected categories")
             for i in selected:
                 st.write(TEAMCAT_NAME_DICT[i])
 
             pdf = PDF()
-
-            team_sel = [teamA_name,teamB_name]
-            
-            # teamA
             for k, l in enumerate(team_sel): 
                 pdf.add_page()
                 pdf.alias_nb_pages()
                 pdf.set_font("Arial", size = 15)
-                pdf.cell(200, 10, txt = str(l), ln = 1, align = 'C')
+                pdf.cell(200, 10, txt = "Athlete selection " + str(l), ln = 1, align = 'C')
                 pdf.set_font("Arial", size = 12)
-
-                textA = "Match "+ str(team_sel[0]) +" against " + str(team_sel[1]) +" at " + str(datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
-                pdf.cell(200, 10, txt = textA, ln = 1, align = 'L')
+                pdf.cell(200, 10, txt = text_match, ln = 1, align = 'L')
                                                  
                 for i, j in enumerate(selected):
                     names = df_total[['name','cat_name']][(df_total['country_code'] == l) & (df_total['team_id'] == j)]
@@ -673,16 +782,8 @@ else:
                         png_name = str(TEAMCAT_NAME_DICT[j]) + str(l) + "2.png"
                         fig.write_image(png_name)
                         pdf.image(png_name) 
-                    
-                pdf.cell(200, 10, txt = "I hereby declare that the team selection is final and can not be changed anymore.",
-                         ln = 1, align = 'L')
-
-                pdf.cell(200, 30, txt = "_______________________                             _________________________",
-                         ln = 1, align = 'L')
-
-                pdf.cell(200, 10, txt = "Confirmation Team  "+ l +"                                     Confirmation OC ",
-                         ln = 1, align = 'L')
-
+                
+                pdf.multi_cell(200, 6, txt = confirm_text(str(k),15), align = 'L')
 
             # save the pdf with name .pdf
             pdf.output("dummy.pdf")  
