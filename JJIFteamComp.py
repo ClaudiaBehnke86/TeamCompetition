@@ -638,92 +638,53 @@ else:
                 confirm = st.sidebar.button('Confirm Selection')      
 
         if((len(selected) == MATCHES) & (confirm == True)):
-            st.sidebar.header("Selected categories")
+            st.header("Selected categories")
             for i in selected:
-                st.sidebar.write(TEAMCAT_NAME_DICT[i])
+                st.write(TEAMCAT_NAME_DICT[i])
 
-            st.header("Selected categories - choose athletes")
+            pdf = PDF()
 
-
-            col1a, col2a = st.columns(2)
-
-            with col1a:
-                pdf = PDF()
+            team_sel = [teamA_name,teamB_name]
+            
+            # teamA
+            for k, l in enumerate(team_sel): 
                 pdf.add_page()
                 pdf.alias_nb_pages()
                 pdf.set_font("Arial", size = 15)
-
-                pdf.cell(200, 10, txt = teamA_name,
-                          ln = 1, align = 'C')
-
+                pdf.cell(200, 10, txt = str(l), ln = 1, align = 'C')
                 pdf.set_font("Arial", size = 12)
-                textA = "Match against " + str(teamB_name) +" at " + str(datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
-                pdf.cell(200, 10, txt = textA,
-                          ln = 1, align = 'L')
 
-
-
+                textA = "Match "+ str(team_sel[0]) +" against " + str(team_sel[1]) +" at " + str(datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+                pdf.cell(200, 10, txt = textA, ln = 1, align = 'L')
                                                  
                 for i, j in enumerate(selected):
-                    st.write(TEAMCAT_NAME_DICT[j])
+                    names = df_total[['name','cat_name']][(df_total['country_code'] == l) & (df_total['team_id'] == j)]
+                    names2 = df_total[['name','cat_name']][(df_total['country_code'] == l) & (df_total['team_id'].isin(TEAMCAT_ALLOWED[j]))]
 
-                    st.write(j)
-                    names = df_total[['name','cat_name']][(df_total['country_code'] == teamA_name) & (df_total['team_id'] == j)]
-                    
-                    st.write(names)
-                    names2 = df_total[['name','cat_name']][(df_total['country_code'] == teamA_name) & (df_total['team_id'].isin(TEAMCAT_ALLOWED[j]))]
-                    st.write(names2)
-
-                    pdf.cell(200, 10, txt = TEAMCAT_NAME_DICT[j],
-                          ln = 2, align = 'C')
+                    pdf.cell(200, 10, txt = TEAMCAT_NAME_DICT[j], ln = 2, align = 'C')
 
                     if(len(names)>0):
                         fig = draw_as_table(names)
-                        png_name = str(TEAMCAT_NAME_DICT[j]) + ".png"
+                        png_name = str(TEAMCAT_NAME_DICT[j]) + str(l) + ".png"
                         fig.write_image(png_name)
                         pdf.image(png_name) 
                     if(len(names2)>0):
                         fig = draw_as_table(names2)
-                        png_name = str(TEAMCAT_NAME_DICT[j]) + "2.png"
+                        png_name = str(TEAMCAT_NAME_DICT[j]) + str(l) + "2.png"
                         fig.write_image(png_name)
                         pdf.image(png_name) 
-                        
-            with col2a:
+                    
+                pdf.cell(200, 10, txt = "I hereby declare that the team selection is final and can not be changed anymore.",
+                         ln = 1, align = 'L')
 
-                pdf.alias_nb_pages()
-                pdf.set_font("Arial", size = 15)
+                pdf.cell(200, 30, txt = "_______________________                             _________________________",
+                         ln = 1, align = 'L')
 
-                pdf.cell(200, 10, txt = teamB_name,
-                          ln = 1, align = 'C')
+                pdf.cell(200, 10, txt = "Confirmation Team  "+ l +"                                     Confirmation OC ",
+                         ln = 1, align = 'L')
 
-                pdf.set_font("Arial", size = 12)
-                textB = "Match against " + str(teamA_name) +" at " + str(datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
-                pdf.cell(200, 10, txt = textB,
-                          ln = 1, align = 'L')
 
-                for i, j in enumerate(selected):
-                    st.write(TEAMCAT_NAME_DICT[j])
-                    namesB = df_total[['name','cat_name']][(df_total['country_code'] == teamB_name) & (df_total['team_id'] == str(j))]
-                    st.write(namesB)
-                    namesB2 = df_total[['name','cat_name']][(df_total['country_code'] == teamB_name) & (df_total['team_id'].isin(TEAMCAT_ALLOWED[j]))]
-                    st.write(namesB2)
-
-                    pdf.cell(200, 10, txt = TEAMCAT_NAME_DICT[j],
-                          ln = 2, align = 'C')
-
-                    if(len(namesB)>0):
-                         fig = draw_as_table(namesB)
-                         png_name2 = str(TEAMCAT_NAME_DICT[j]) + "B.png"
-                         fig.write_image(png_name2)
-                         pdf.image(png_name2) 
-                    if(len(namesB2)>0):
-                        fig = draw_as_table(namesB2)
-                        png_name2 = str(TEAMCAT_NAME_DICT[j]) + "B2.png"
-                        fig.write_image(png_name2)
-                        pdf.image(png_name2) 
-                        
-
-                # save the pdf with name .pdf
+            # save the pdf with name .pdf
             pdf.output("dummy.pdf")  
             with open("dummy.pdf", "rb") as pdf_file:
                 PDFbyte = pdf_file.read()
