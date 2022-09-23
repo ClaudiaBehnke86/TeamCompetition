@@ -364,7 +364,8 @@ if page == 'Preparation':
     df_teams['cat_count'] = df_teams['country_code'].map(df_teams['country_code'].value_counts())
     # only enter teams with at least X categories present
     team_size = st.number_input("Minimum number of members in a team",
-                                help='define the minimum number', value=5)
+                                help='define the minimum number', value=5, min_value = 1, max_value = len(TEAMCAT_NAME_DICT))
+
     df_teams = df_teams[df_teams['cat_count'] > team_size]
     del df_teams['cat_count']
 
@@ -452,6 +453,11 @@ else:
     uploaded_file = st.sidebar.file_uploader("Choose a file",
                                      help="Make sure to have a CSV with the right input")
 
+    # amount of categories that will fight:
+    MATCHES = st.sidebar.number_input("Number of fight between teams",
+                                help='Define the number', value=7,  min_value = 1, max_value = len(TEAMCAT_NAME_DICT))
+
+
     if uploaded_file is not None:
         df_total = pd.read_csv(uploaded_file)    
         
@@ -506,8 +512,6 @@ else:
         exclude = []
         # list for selected categories
         selected = []
-        # amount of categories that will fight:
-        MATCHES = 7
 
         # for confirm button (to avoid direct display of matches)
         confirm = False
@@ -590,6 +594,10 @@ else:
                 st.write("These categories exist in only one of the teams")
                 st.write(result_st_sel)
 
+            if(miss_cat > len(result_st_sel)):
+                miss_cat = len(result_st_sel) 
+                st.error("There are not enough categories to choose from! Reduce selectable categories to " + str(miss_cat), icon="🚨") 
+                
             if(miss_cat // 2) != 0:
                 st.write("- Each team can choose "+ str(miss_cat // 2)+" categories to add")
             if(miss_cat % 2) != 0: 
