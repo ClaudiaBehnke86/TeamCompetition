@@ -183,7 +183,10 @@ ID_TO_NAME = {
 CLUBNAME_COUNTRY_MAP = {"Belgian Ju-Jitsu Federation": 'BEL',
                         "Deutscher Ju-Jitsu Verband e.V.": 'GER',
                         "Federazione Ju Jitsu Italia": 'ITA',
-                        "Romanian Martial Arts Federation": 'ROU'}
+                        "Romanian Martial Arts Federation": 'ROU',
+                        "Österreichischer Jiu Jitsu Verband": "AUT",
+                        "Taiwan Ju Jitsu Federation": "TPE"
+                        }
 
 
 def get_athletes_cat(eventid, cat_id, user, password):
@@ -221,8 +224,12 @@ def get_athletes_cat(eventid, cat_id, user, password):
         else:
             # for an unclear reason teams to no have a country code...
             # convert club name to country using dict...
+            # and fix nameing in duo
             df_out['country_code'] = df_out['club_name'].replace(CLUBNAME_COUNTRY_MAP)
-            df_out['name'].replace(",", "/", regex=True, inplace=True)
+            df_out['name'] = df_out['name'].str.split('(').str[1]
+            df_out['name'] = df_out['name'].str.split(')').str[0]
+            df_out['name'].replace(",", " /", regex=True, inplace=True)
+            df_out['name'].replace("_", " /", regex=False, inplace=True)
             df = df_out[['name', 'country_code']]
             df['cat_id'] = cat_id
             df['cat_name'] = df['cat_id'].replace(ID_TO_NAME)
@@ -293,7 +300,7 @@ def draw_as_table(df):
     rowOddColor = 'white'
     df["select"] = " "
     fig = go.Figure(data=[go.Table(
-                    columnwidth = [10,73,37],
+                    columnwidth = [10,50,40],
                     header=dict(values=["Select", "Name", "Original Category"], # values=list(df.columns),
                     fill_color=headerColor,
                     font = dict(family= "Arial", color = 'white', size = 12),
@@ -311,7 +318,7 @@ def draw_as_table(df):
 
     fig.update_layout(
         autosize=False,
-        width=600,
+        width=550,
         height=(numb_row+1) *25,
         margin=dict(
             l=20,
@@ -331,7 +338,7 @@ def draw_as_table_teamID(df):
     rowOddColor = 'white'
     df["select"] = " "
     fig = go.Figure(data=[go.Table(
-                    columnwidth = [10,73,37],
+                    columnwidth = [10,60,40],
                     header=dict(values=["Select", "Team Categories"],
                     fill_color=headerColor,
                     font = dict(family= "Arial", color = 'white', size = 12),
