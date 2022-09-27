@@ -409,7 +409,7 @@ if page == 'Preparation':
                     df_new = pd.concat(list_df_new)
                     df_new['team_id'] = str(x)
                 list_df_new_total.append(df_new)
-            my_bar.progress((i+1)/len(TEAMCAT_TO_CATID))
+                my_bar.progress((i+1)/len(TEAMCAT_TO_CATID))
 
     df_total = pd.concat(list_df_new_total)
     df_teams = df_total[['team_id','name', 'country_code']].groupby(['team_id', 'country_code']).count().reset_index()
