@@ -1,5 +1,4 @@
 '''
-
 Create a mixed team competition that allows the teams
 
 There are team categories which consist of individual categories:
