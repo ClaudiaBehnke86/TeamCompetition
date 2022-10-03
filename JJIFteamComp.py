@@ -185,7 +185,12 @@ CLUBNAME_COUNTRY_MAP = {"Belgian Ju-Jitsu Federation": 'BEL',
                         "Österreichischer Jiu Jitsu Verband": "AUT",
                         "Taiwan Ju Jitsu Federation": "TPE",
                         "Royal Spain Ju Jutsi Federation": 'ESP',
-                        "Federation Française de Judo, Jujitsu, Kendo et DA": 'FRA'
+                        "Federation Française de Judo, Jujitsu, Kendo et DA": 'FRA',
+                        "Pakistan Ju-Jitsu Federation": 'PAK',
+                        "Taiwan Ju Jitsu Federation": 'TPE',
+                        "Vietnam Jujitsu Federation": 'VIE',
+                        "Ju-Jitsu Federation of Slovenia": 'SLO',
+                        "Hellenic Ju-Jitsu Federation": 'GRE',
                         }
 
 
@@ -427,6 +432,10 @@ Confirmation Team " + str(team) + "                                     Confirma
 st.title('Team Competition')
 st.sidebar.image("https://i0.wp.com/jjeu.eu/wp-content/uploads/2018/08/jjif-logo-170.png?fit=222%2C160&ssl=1",
                  use_column_width='always')
+
+LINK = '[Click here for the manual](https://github.com/ClaudiaBehnke86/TeamCompetition/blob/main/Runbook_TeamCompetitionWCh.pdf)'
+st.markdown(LINK, unsafe_allow_html=True)
+
 
 page = st.sidebar.selectbox('Select mode', ['Preparation', 'Selection & Match Phase'])
 
