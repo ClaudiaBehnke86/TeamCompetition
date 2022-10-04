@@ -190,6 +190,7 @@ CLUBNAME_COUNTRY_MAP = {"Belgian Ju-Jitsu Federation": 'BEL',
                         "Vietnam Jujitsu Federation": 'VIE',
                         "Ju-Jitsu Federation of Slovenia": 'SLO',
                         "Hellenic Ju-Jitsu Federation": 'GRE',
+                        "Ju Jitsu Association of Thailand": 'THA'
                         }
 
 
@@ -230,7 +231,6 @@ def get_athletes_cat(eventid, cat_id, user, password):
             # for an unclear reason teams to no have a country code...
             # convert club name to country using dict
             df_out['country_code'] = df_out['club_name'].replace(CLUBNAME_COUNTRY_MAP)
-
             # and fix naming in duo
             df_out['name'] = df_out['name'].str.split('(').str[1]
             df_out['name'] = df_out['name'].str.split(')').str[0]
