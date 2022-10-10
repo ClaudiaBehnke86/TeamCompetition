@@ -190,7 +190,8 @@ CLUBNAME_COUNTRY_MAP = {"Belgian Ju-Jitsu Federation": 'BEL',
                         "Vietnam Jujitsu Federation": 'VIE',
                         "Ju-Jitsu Federation of Slovenia": 'SLO',
                         "Hellenic Ju-Jitsu Federation": 'GRE',
-                        "Ju Jitsu Association of Thailand": 'THA'
+                        "Ju Jitsu Association of Thailand": 'THA',
+                        "FÉDÉRATION ROYALE MAROCAINE DE JU-JITSU ": 'MAR'
                         }
 
 
@@ -234,8 +235,9 @@ def get_athletes_cat(eventid, cat_id, user, password):
             # and fix naming in duo
             df_out['name'] = df_out['name'].str.split('(').str[1]
             df_out['name'] = df_out['name'].str.split(')').str[0]
-            df_out['name'].replace(",", " /", regex=True, inplace=True)
-            df_out['name'].replace("_", " /", regex=False, inplace=True)
+            df_out['name'].replace(",", " ", regex=True, inplace=True)
+            df_out['name'].replace("_", " ", regex=False, inplace=True)
+            df_out['name'].replace("/", " ", regex=False, inplace=True)
             df_ath = df_out[['name', 'country_code']]
             df_ath['cat_id'] = cat_id
             df_ath['cat_name'] = df_ath['cat_id'].replace(ID_TO_NAME)
