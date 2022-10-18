@@ -191,7 +191,9 @@ CLUBNAME_COUNTRY_MAP = {"Belgian Ju-Jitsu Federation": 'BEL',
                         "Ju-Jitsu Federation of Slovenia": 'SLO',
                         "Hellenic Ju-Jitsu Federation": 'GRE',
                         "Ju Jitsu Association of Thailand": 'THA',
-                        "FÉDÉRATION ROYALE MAROCAINE DE JU-JITSU ": 'MAR'
+                        "FÉDÉRATION ROYALE MAROCAINE DE JU-JITSU ": 'MAR',
+                        "Ju-Jitsu Association Islamic Republic of Iran": 'IRI',
+                        "Ju Jitsu Federation of Cambodia": 'CAM'
                         }
 
 
