@@ -8,6 +8,8 @@ and Adults Fighting Men -85 kg  could compete in the category
 '''
 from datetime import datetime
 from datetime import timedelta
+from datetime import date
+from datetime import time
 import random
 import os
 
@@ -409,19 +411,27 @@ def draw_as_table_teamid(df_in):
     return fig_out
 
 
-def confirm_text(team, give_time):
+def confirm_text(team, fixed_time, give_time):
     '''
     default confirm text
     Parameters
     ----------
     team
         name of team [str]
+    fixed_time
+        if true: fixed time [bool]
+        else: time in minutes
     give_time
         time given to return sheets [int]
     '''
+
+    if fixed_time:
+        time_txt = str(date.today()) + " " + str(give_time)
+    else:
+        time_txt = str((datetime.now() + timedelta(minutes=give_time)).strftime('%Y-%m-%d %H:%M'))
     confirm_txt = '\n' + '- ' * 50 + '\n' + \
         "Please return this sheet latest at " \
-        + str((datetime.now() + timedelta(minutes=give_time)).strftime('%Y-%m-%d %H:%M'))+"\n\
+        + time_txt + "\n\
 I hereby declare that the team selection is final and can not be changed anymore. \n \
                                                                     \n \
                                                                     \n \
@@ -492,6 +502,14 @@ if page == 'Preparation':
                            allcountry, allcountry)
     df_total = df_total[df_total['country_code'].isin(teams)]
 
+    fixed_time = st.checkbox("Fixed registration deadline", value=True )
+
+    if fixed_time:
+        deadline = st.time_input("Registration deadline at:",
+                                 value=(time(hour=17, minute=0)))
+    else:
+        deadline = st.number_input("Registration closes X min after printing", value=120)
+
     # create download file
     file = df_total.to_csv(index=False)
     btn = st.download_button(
@@ -538,7 +556,7 @@ if page == 'Preparation':
                      ln=1, align='L')
         pdf_sel.cell(200, 6, txt="Team Category     Name, First Name                                   Original Category",
                      ln=1, align='L')
-        pdf_sel.multi_cell(200, 6, txt=confirm_text(str(k), 120), align='L')
+        pdf_sel.multi_cell(200, 6, txt=confirm_text(str(k), fixed_time,  deadline), align='L')
 
     pdf_sel.output("dummy2.pdf")
     with open("dummy2.pdf", "rb") as pdf_file:
@@ -560,6 +578,7 @@ else:
                                       help='Define the number', value=7,  min_value=1, max_value=len(TEAMCAT_NAME_DICT))
 
     if uploaded_file is not None:
+
         df_total = pd.read_csv(uploaded_file)
         df_teams = df_total[['team_id', 'name', 'country_code']].groupby(['team_id', 'country_code']).count().reset_index()
         teams = df_teams.country_code.unique()
@@ -577,6 +596,12 @@ else:
         # get the categories per team as list
         teamA = df_teams['team_id'][df_teams['country_code'] == teamA_name].tolist()
         teamB = df_teams['team_id'][df_teams['country_code'] == teamB_name].tolist()
+
+        fixed_time_t = st.checkbox("Fixed registration deadline", value=False)
+        if fixed_time_t:
+            deadline = st.time_input("Deadline at:")
+        else:
+            deadline = st.number_input("Deadline X min after printing", value=15)
 
         # display the teams in list
         col1, col2 = st.columns(2)
@@ -672,7 +697,7 @@ else:
                     pdf_remove.image(PNG_NAME)
                     os.remove(PNG_NAME)
                     # confirm text
-                    pdf_remove.multi_cell(200, 6, txt=confirm_text(str(l), 15),
+                    pdf_remove.multi_cell(200, 6, txt=confirm_text(str(k), fixed_time_t,  deadline),
                                           align='L')
 
                 # save the pdf with name .pdf
@@ -780,7 +805,7 @@ else:
                     os.remove(PNG_NAME)
 
                     # confirm text
-                    pdf_add.multi_cell(200, 6, txt=confirm_text(str(l), 15),
+                    pdf_add.multi_cell(200, 6, txt=confirm_text(str(k), fixed_time_t,  deadline),
                                        align='L')
                     if (miss_cat % 2) != 0:
                         pdf_add.cell(200, 10,
@@ -868,7 +893,7 @@ else:
                         pdf.image(PNG_NAME)
                         os.remove(PNG_NAME)
 
-                pdf.multi_cell(200, 6, txt=confirm_text(str(l), 15), align='L')
+                pdf.multi_cell(200, 6, txt=confirm_text(sstr(k), fixed_time_t,  deadline), align='L')
 
             # save the pdf with name .pdf
             pdf.output("dummy.pdf")
