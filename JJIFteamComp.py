@@ -697,7 +697,7 @@ else:
                     pdf_remove.image(PNG_NAME)
                     os.remove(PNG_NAME)
                     # confirm text
-                    pdf_remove.multi_cell(200, 6, txt=confirm_text(str(k), fixed_time_t,  deadline),
+                    pdf_remove.multi_cell(200, 6, txt=confirm_text(str(l), fixed_time_t,  deadline),
                                           align='L')
 
                 # save the pdf with name .pdf
@@ -805,7 +805,7 @@ else:
                     os.remove(PNG_NAME)
 
                     # confirm text
-                    pdf_add.multi_cell(200, 6, txt=confirm_text(str(k), fixed_time_t,  deadline),
+                    pdf_add.multi_cell(200, 6, txt=confirm_text(str(l), fixed_time_t,  deadline),
                                        align='L')
                     if (miss_cat % 2) != 0:
                         pdf_add.cell(200, 10,
@@ -893,7 +893,7 @@ else:
                         pdf.image(PNG_NAME)
                         os.remove(PNG_NAME)
 
-                pdf.multi_cell(200, 6, txt=confirm_text(str(k), fixed_time_t,  deadline), align='L')
+                pdf.multi_cell(200, 6, txt=confirm_text(str(l), fixed_time_t,  deadline), align='L')
 
             # save the pdf with name .pdf
             pdf.output("dummy.pdf")
