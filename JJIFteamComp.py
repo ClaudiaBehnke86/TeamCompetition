@@ -893,7 +893,7 @@ else:
                         pdf.image(PNG_NAME)
                         os.remove(PNG_NAME)
 
-                pdf.multi_cell(200, 6, txt=confirm_text(sstr(k), fixed_time_t,  deadline), align='L')
+                pdf.multi_cell(200, 6, txt=confirm_text(str(k), fixed_time_t,  deadline), align='L')
 
             # save the pdf with name .pdf
             pdf.output("dummy.pdf")
