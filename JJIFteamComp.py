@@ -199,6 +199,7 @@ CLUBNAME_COUNTRY_MAP = {"Belgian Ju-Jitsu Federation": 'BEL',
                         }
 
 
+@st.cache
 def get_athletes_cat(eventid, cat_id, user, password):
     """
     get the athletes form sportdata per category & export to a nice data frame
